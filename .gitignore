@@ -43,7 +43,7 @@ Temporary Items
 .apdisk
 
 #no need
-.pyc
-.csv
-.bat
-.txt
+*.pyc
+*.csv
+*.bat
+*.txt
