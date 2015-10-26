@@ -4,12 +4,14 @@
 #
 # Author:      Lai
 #
-# Created:     19/10/2015
+# Created:     26/10/2015
 #-------------------------------------------------------------------------------
-import os
+import os, sys
+import subprocess
 import time
 import datetime
 from xlwings import Workbook, Sheet, Range, Chart
+import data_post
 
 def get_folder_filenames(path):
     """
@@ -31,29 +33,9 @@ def make_folder(path,folder_names):
         if not os.path.exists(os.path.join(path,folder)):
             os.makedirs(os.path.join(path,folder))
 
-def save_data(path,data):
-    f = open(path,'w')
-    f.write(data)
-    f.close
-
-def data_to_str(data):
-    """
-    Get data and turn to .csv format
-    """
-    s = ""
-    items = ""
-    s += draw_item.draw_config(data)
-    items = draw_item.draw_items(data)
-    for i in range(len(items)):
-        if i == 0:
-            s += items[i] + "\n"
-        else:
-            t = len(title().split(",")) - 2
-            s += "," * t + items[i] + "\n"
-    return s + "\n"
-
-def title():
-    return " Number, standard, Freq, Rate, BW, Stream, Ant,  Item,  Vaule\n"
+def test():
+    wb = Workbook.caller()
+    Range('E4').value = "Hello World"
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)
@@ -63,30 +45,19 @@ if __name__ == '__main__':
     t = time.time()
     date = datetime.datetime.fromtimestamp(t).strftime(r"%Y%m%d")
 
-    #print 'Argument List:', str(sys.argv)
-##    subprocess.call(["ls", "-l"],shell=True)
-##    a = subprocess.call([r"D:\game\abstract\post\usi.xls"],shell=True)
-##    subprocess.Popen([r"D:\game\abstract\post\usi.xls"])
-    wb = Workbook(r"D:\game\abstract\post\usi.xls")
+##    if len(sys.argv) == 1:
+##        sys.exit(0)
 
-##    os.system(r"D:\game\abstract\post\usi.xls")
-    a=raw_input()
-##    rootdir = os.path.dirname(__file__)
-##    log_path = os.path.join(rootdir,"Log")
-##    relog_path = os.path.join(rootdir,"ReLog")
-##    folder_file_names = get_folder_filenames(log_path)
-##    anchor = "TX_MULTI_VERIFICATION"
-##    t = time.time()
-##    date = datetime.datetime.fromtimestamp(t).strftime(r"%Y%m%d")
+##    template_path = sys.argv[1]
+##    subprocess.Popen([template_path],shell=True).pid
+##    Workbook.set_mock_caller(template_path)
+##    time.sleep(6) #wait excel to execute
+    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
+    Workbook.set_mock_caller(path)
+    time.sleep(6)
+    test()
+##    a=raw_input()
 ##
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())
 ##
-##    for folder in folder_file_names.keys():
-##        for f in folder_file_names[folder]:
-##            format_str = ""
-##            format_str += title()
-##            data = data_mange.make_modifed_data(os.path.join(log_path,folder,f),anchor)
-##            for d in data:
-##                format_str += data_to_str(d)
-##
-##            save_data(os.path.join(relog_path,date,folder,(f.split(".")[0] + ".csv")),format_str)
