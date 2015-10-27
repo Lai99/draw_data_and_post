@@ -11,7 +11,7 @@ import subprocess
 import time
 import datetime
 from xlwings import Workbook, Sheet, Range, Chart
-import data_post
+import template_search
 
 def get_folder_filenames(path):
     """
@@ -33,9 +33,12 @@ def make_folder(path,folder_names):
         if not os.path.exists(os.path.join(path,folder)):
             os.makedirs(os.path.join(path,folder))
 
-def test():
+def post():
     wb = Workbook.caller()
-    Range('E4').value = "Hello World"
+##    anchor = template_search.search_value("E","A1","K10")
+##    print anchor
+    a = template_search.get_spec_pos(2,"Standard")
+    print a , len(a)
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)
@@ -56,7 +59,7 @@ if __name__ == '__main__':
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
     Workbook.set_mock_caller(path)
     time.sleep(6)
-    test()
+    post()
 ##    a=raw_input()
 ##
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())
