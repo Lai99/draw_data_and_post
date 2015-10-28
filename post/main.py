@@ -38,7 +38,7 @@ def post():
 ##    anchor = template_search.search_value("E","A1","K10")
 ##    print anchor
     a = template_search.get_spec_pos(2,"Standard")
-    print a , len(a)
+    print len(a)
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)

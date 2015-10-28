@@ -41,29 +41,54 @@ def search_value(value, start, end):
                 return (row,col)
     return False
 
-def get_spec_pos(sheet,anchor,spec_x = 1,module_x = 2,case_x = 5):
-    items = []
+def get_spec_pos(sheet,anchor,spec_x = 1,module_x = 2,rate_x = 3, case_x = 5, start_x = 6):
     start = 0
+    #Don't need sheet front content. Use anchor to go to spec start position
     for row in range(1,50):
         if Range(sheet,(row,spec_x)).value == anchor:
             start = row
             break
-    last = (0,0)
-    module_items = []
+    last_spec = (0,0)
+    last_module = (0,0)
+    items = {}
+    module_items = {}
+    case_count = 0
+    #Don't no when to end. Need a value as bound ex:1000
     for row in range(start+1,1000):
-        if Range(sheet,(row,spec_x)).value != None and Range(sheet,(row,spec_x)).value != anchor:
-##            if module_items:
-            items.append(Range(sheet,(row,spec_x)).value)
-##                items[Range(sheet,last).value] = module_items
-##            module_items = []
-##            last = (row,spec_x)
-##        if Range(sheet,(row,module_x)).value != None:
-##            module_items.append(Range(sheet,(row,module_x)).value)
+        #Use spec. between spec. to split data block, need to add last_spec one in the end
+        if Range(sheet,(row,module_x)).value != None:    #Collect Modulations in a spec.
+            if case_count != 0:
+                #Add "module and rate" with "value start position and case numbers"
+                module_items[Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)] = ((last_module[0], start_x),case_count)
+##                Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
+                case_count = 0
+            last_module = (row,module_x)
 
-##    while items.pop(anchor,False):
-##        pass
+        if Range(sheet,(row,spec_x)).value != None:
+            if  Range(sheet,(row,spec_x)).value != anchor:
+                if module_items:   #if true means it has a modulation collection
+                    items[Range(sheet,last_spec).value] = module_items
+##                    Range(sheet,(last_spec[0],12)).value = module_items.keys()
+##                    print module_items.values()
+                    module_items = {}
+                last_spec = (row,spec_x)  #A spec start position
+            else:
+                continue   #Don't need row which has anchor
 
+        if Range(sheet,(row,case_x)).value != None:  #Count how many test case
+            case_count += 1
+
+    #Don't forget last one have no end point
+    if case_count != 0:
+        #Add "module and rate" with "value start position and case numbers"
+        module_items[Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)] = ((last_module[0], start_x),case_count)
+##        Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
+
+    if module_items:
+        items[Range(sheet,(row,spec_x)).value] = module_items
+##        Range(sheet,(last_spec[0],12)).value = module_items.keys()
+##        print module_items.values()
     return items
 
 if __name__ == '__main__':
-    print search_value('E',"A1","K10")
+    pass
