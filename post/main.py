@@ -13,6 +13,7 @@ import datetime
 from xlwings import Workbook, Sheet, Range, Chart
 import template_search
 import data_mange
+import sheet_post
 
 def get_folder_filenames(path):
     """
@@ -34,13 +35,14 @@ def make_folder(path,folder_names):
         if not os.path.exists(os.path.join(path,folder)):
             os.makedirs(os.path.join(path,folder))
 
-def post():
-##    wb = Workbook.caller()
+def post(data_path):
+    wb = Workbook.caller()
 
-##    fill_pos = template_search.get_fill_pos(2,"Standard")
+    fill_pos = template_search.get_fill_pos(2,"Standard")
 ##    print len(fill_pos)
+    for data in data_mange.load_data(date_path):
+        fill_pos[data["standard"]]
 
-    data_mange.load_data(r"D:\python task\draw_data_and_post\post\TX.csv")
 
 
 if __name__ == '__main__':
@@ -58,11 +60,12 @@ if __name__ == '__main__':
 ##    subprocess.Popen([template_path],shell=True).pid
 ##    Workbook.set_mock_caller(template_path)
 ##    time.sleep(6) #wait excel to execute
-##    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
-##    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
-##    Workbook.set_mock_caller(path)
-##    time.sleep(6)
-    post()
+    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
+    Workbook.set_mock_caller(path)
+    time.sleep(6)
+    data_path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
+    post(data_path)
 ##    a=raw_input()
 ##
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())

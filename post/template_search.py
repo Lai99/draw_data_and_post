@@ -49,20 +49,20 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
     Output:dict:whole sheet value can be filled position
     """
     start = 0
-    #Don't need sheet front content. Use anchor to go to spec start position
+    #Don't need sheet front content. Use anchor to go to standard start position
     for row in range(1,50):
         if Range(sheet,(row,standard_x)).value == anchor:
             start = row
             break
-    last_spec = (0,0)
+    last_standard = (0,0)
     last_module = (0,0)
     items = {}
     module_items = {}
     case_count = 0
     #Don't no when to end. Need a value as bound ex:1000
     for row in range(start+1,1000):
-        #Use spec. between spec. to split data block, need to add last_spec one in the end
-        if Range(sheet,(row,module_x)).value != None:    #Collect Modulations in a spec.
+        #Use standard between standard to split data block, need to add last_standard one in the end
+        if Range(sheet,(row,module_x)).value != None:    #Collect Modulations in a standard
             if case_count != 0:
                 #Add "module and rate" with "value start position and case numbers"
                 module_items[Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)] = ((last_module[0], start_x),case_count)
@@ -73,11 +73,11 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
         if Range(sheet,(row,standard_x)).value != None:
             if  Range(sheet,(row,standard_x)).value != anchor:
                 if module_items:   #if true means it has a modulation collection
-                    items[Range(sheet,last_spec).value] = module_items
-##                    Range(sheet,(last_spec[0],12)).value = module_items.keys()
+                    items[Range(sheet,last_standard).value] = module_items
+##                    Range(sheet,(last_standard[0],12)).value = module_items.keys()
 ##                    print module_items.values()
                     module_items = {}
-                last_spec = (row,standard_x)  #A spec start position
+                last_standard = (row,standard_x)  #A spec start position
             else:
                 continue   #Don't need row which has anchor
 
@@ -92,7 +92,7 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
 
     if module_items:
         items[Range(sheet,(row,standard_x)).value] = module_items
-##        Range(sheet,(last_spec[0],12)).value = module_items.keys()
+##        Range(sheet,(last_standard[0],12)).value = module_items.keys()
 ##        print module_items.values()
     return items
 

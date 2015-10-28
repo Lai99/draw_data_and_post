@@ -26,24 +26,22 @@ def get_stream(line):
 def get_antenna(line):
     return line[6]
 
+def get_power(line):
+    return line[8]
+
 get_func = {"standard":get_standard,
             "channel":get_channel,
             "rate":get_rate,
             "BW":get_bw,
             "stream":get_stream,
-            "antenna":get_antenna
+            "antenna":get_antenna,
+            "power":get_power
            }
-
 def load_data(path):
     data = {}
     with open(path, 'rb') as f:
         reader = csv.reader(f)
         reader.next()
-##        line = [i for i in reader.next() if i!='']
-##        while line:
-##            line = [i for i in reader.next() if i!='']
-##            print line
-
         for line in reader:
             line = [i for i in line if i!='']
             if line:
@@ -54,21 +52,16 @@ def load_data(path):
                     data["BW"] = get_func["BW"](line)
                     data["stream"] = get_func["stream"](line)
                     data["antenna"] = get_func["antenna"](line)
+                    data["power"] = get_func["power"](line)
                 else:
-                    pass
+                    data[line[0]] = line[1]
             else:
                 yield data
                 data = {}
 
-
-def test():
-    y = 1
-    for i in range(3):
-        yield i, y
-        y += 1
-
-
 if __name__ == '__main__':
+##    pass
 ##    load_data(r"D:\python task\draw_data_and_post\post\TX.csv")
-    for i in load_data(r"D:\python task\draw_data_and_post\post\TX.csv"):
+    path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
+    for i in load_data(path):
         print i
