@@ -12,6 +12,7 @@ import time
 import datetime
 from xlwings import Workbook, Sheet, Range, Chart
 import template_search
+import data_mange
 
 def get_folder_filenames(path):
     """
@@ -34,11 +35,13 @@ def make_folder(path,folder_names):
             os.makedirs(os.path.join(path,folder))
 
 def post():
-    wb = Workbook.caller()
-##    anchor = template_search.search_value("E","A1","K10")
-##    print anchor
-    a = template_search.get_spec_pos(2,"Standard")
-    print len(a)
+##    wb = Workbook.caller()
+
+##    fill_pos = template_search.get_fill_pos(2,"Standard")
+##    print len(fill_pos)
+
+    data_mange.load_data(r"D:\python task\draw_data_and_post\post\TX.csv")
+
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)
@@ -55,10 +58,10 @@ if __name__ == '__main__':
 ##    subprocess.Popen([template_path],shell=True).pid
 ##    Workbook.set_mock_caller(template_path)
 ##    time.sleep(6) #wait excel to execute
-    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
-    Workbook.set_mock_caller(path)
-    time.sleep(6)
+##    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
+##    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
+##    Workbook.set_mock_caller(path)
+##    time.sleep(6)
     post()
 ##    a=raw_input()
 ##

@@ -41,11 +41,17 @@ def search_value(value, start, end):
                 return (row,col)
     return False
 
-def get_spec_pos(sheet,anchor,spec_x = 1,module_x = 2,rate_x = 3, case_x = 5, start_x = 6):
+def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5, start_x = 6):
+    """
+    Get all value can be filled position in a sheet
+    Input: int:specified sheet, string:anchor which used to split data block, int:spec column position, int: modulation column position,
+           int:data rate column position, int:test items column position
+    Output:dict:whole sheet value can be filled position
+    """
     start = 0
     #Don't need sheet front content. Use anchor to go to spec start position
     for row in range(1,50):
-        if Range(sheet,(row,spec_x)).value == anchor:
+        if Range(sheet,(row,standard_x)).value == anchor:
             start = row
             break
     last_spec = (0,0)
@@ -64,14 +70,14 @@ def get_spec_pos(sheet,anchor,spec_x = 1,module_x = 2,rate_x = 3, case_x = 5, st
                 case_count = 0
             last_module = (row,module_x)
 
-        if Range(sheet,(row,spec_x)).value != None:
-            if  Range(sheet,(row,spec_x)).value != anchor:
+        if Range(sheet,(row,standard_x)).value != None:
+            if  Range(sheet,(row,standard_x)).value != anchor:
                 if module_items:   #if true means it has a modulation collection
                     items[Range(sheet,last_spec).value] = module_items
 ##                    Range(sheet,(last_spec[0],12)).value = module_items.keys()
 ##                    print module_items.values()
                     module_items = {}
-                last_spec = (row,spec_x)  #A spec start position
+                last_spec = (row,standard_x)  #A spec start position
             else:
                 continue   #Don't need row which has anchor
 
@@ -85,10 +91,19 @@ def get_spec_pos(sheet,anchor,spec_x = 1,module_x = 2,rate_x = 3, case_x = 5, st
 ##        Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
 
     if module_items:
-        items[Range(sheet,(row,spec_x)).value] = module_items
+        items[Range(sheet,(row,standard_x)).value] = module_items
 ##        Range(sheet,(last_spec[0],12)).value = module_items.keys()
 ##        print module_items.values()
     return items
+
+def get_channel_pos(sheet, pos, anchor):
+    row, col = pos[0], pos[1]
+    while row != 0:
+        if anchor in str(Range(sheet,(row,col)).value):
+            return (row,col)
+        else:
+            row -= 1
+    return False
 
 if __name__ == '__main__':
     pass
