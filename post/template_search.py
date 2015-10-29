@@ -45,19 +45,29 @@ def manage_standard(sheet,pos):
     s = Range(sheet,pos).value
     if "\n" in s:
         standard_rate, stream = s.split("\n")
-        standard_rate = standard_rate.replace(" ","")
-        standard, rate = standard_rate.split("-")
+        standard_rate = standard_rate.strip()
+##        print standard_rate
+        standard, rate = standard_rate.split(" ")
         stream = stream.split(" ")[0]
-        rate = rate.split("T")[-1]
+        rate = rate.split("M")[0]
 ##        print (standard,rate,stream)
         return (standard,rate,stream)
     else:
 ##        print s
-        return (s,None,None)
+        return s
 
 def manage_modulation(sheet,pos):
-    s = Range(sheet,pos).value
-    Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)
+    modulation = Range(sheet,pos).value.split("-")[0]
+    return modulation
+
+def mange_rate(sheet,pos):
+    pass
+
+def make_module_item_key(sheet, pos, offset):
+    if Range(sheet,(pos[0],offset)).value:
+        return manage_modulation(sheet,pos) + "-" + str(Range(sheet,(pos[0],offset)).value)
+    else:
+        return manage_modulation(sheet,pos)
 
 def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5, start_x = 6):
     """
@@ -83,7 +93,8 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
         if Range(sheet,(row,module_x)).value != None:    #Collect Modulations in a standard
             if case_count != 0:
                 #Add "module and rate" with "value start position and case numbers"
-                module_items[manage_modulation(sheet,last_module)] = ((last_module[0], start_x),case_count)
+                k = make_module_item_key(sheet, last_module, rate_x)
+                module_items[k] = ((last_module[0], start_x),case_count)
 ##                Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
                 case_count = 0
             last_module = (row,module_x)
@@ -105,7 +116,8 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
     #Don't forget last one have no end point
     if case_count != 0:
         #Add "module and rate" with "value start position and case numbers"
-        module_items[manage_modulation(sheet,last_module)] = ((last_module[0], start_x),case_count)
+        k = make_module_item_key(sheet, last_module, rate_x)
+        module_items[k] = ((last_module[0], start_x),case_count)
 ##        Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
 
     if module_items:

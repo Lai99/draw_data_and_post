@@ -60,14 +60,19 @@ if __name__ == '__main__':
 ##    subprocess.Popen([template_path],shell=True).pid
 ##    Workbook.set_mock_caller(template_path)
 ##    time.sleep(6) #wait excel to execute
-    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
+    subprocess.Popen([r"D:\game\abstract\draw_data_and_post\post\t 1.xls"],shell=True).pid
+##    subprocess.Popen([r"D:\python task\draw_data_and_post\post\usi.xls"],shell=True).pid
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 't 1.xls'))
     Workbook.set_mock_caller(path)
-    time.sleep(6)
+    time.sleep(3)
     wb = Workbook.caller()
-##    data_path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"\
-    data_path = r"D:\python task\draw_data_and_post\post\TX3.csv"
+##    wb.screen_updating = False
+##    data_path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
+    data_path = r"D:\game\abstract\draw_data_and_post\post\t1.csv"
+##    data_path = r"D:\python task\draw_data_and_post\post\TX3.csv"
     sheet_post.post(data_path)
+##    print Range(2,(8,1)).value
+##    wb.screen_updating = True
 ##    data_path = r"D:\python task\draw_data_and_post\post\TX4.csv"
 ##    sheet_post.post(data_path)
 ##    a=raw_input()

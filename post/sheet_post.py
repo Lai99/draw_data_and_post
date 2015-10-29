@@ -18,7 +18,7 @@ item_ref = {"standard":"standard",
             "BW":"BW"
            }
 
-sheet_item_ref = {"Tx power":"power",
+sheet_item_ref = {"Tx Power":"power",
                   "EVM":"EVM",
                   "Mask":"Mask",
                   "Freq error":"F_ER",
@@ -53,27 +53,50 @@ post_func = {"power":post_power,
             }
 
 def post(data_path):
+    #
+    sheet = 2
+    #
     standard_anchor = "Standard"
     channel_anchor = "Ch"
-    fill_pos = template_search.get_fill_pos(2,standard_anchor)
+    fill_pos = template_search.get_fill_pos(sheet,standard_anchor)
+    last_data_conf = None
+    need_pos = None
+    case_num = 0
 
     for data in data_mange.load_data(data_path):
-        m = meet_standard(data, fill_pos)
-        if meet_rate(data, m):
-            need_pos, case_num = meet_rate(data, m)
-        else:
-            print "Can't find this modulation" + data[item_ref["rate"]]
-            continue
+        if not check_same_row(data, last_data_conf):
+##            print data
+##            print fill_pos.keys()
+            m = meet_standard(data, fill_pos)
+##            print m
+            if meet_rate(data, m):
+                need_pos, case_num = meet_rate(data, m)
+                last_data_conf = get_data_conf(data)
+            else:
+                print "Can't find this modulation " + data[item_ref["rate"]]
+                continue
 ##        print need_pos, case_num
-        ch_start = template_search.get_channel_start(2,need_pos,channel_anchor)
+        ch_start = template_search.get_channel_start(sheet,need_pos,channel_anchor)
 ##        print ch_start
-        ch_pos = template_search.get_channel_pos(2,ch_start,data[item_ref["channel"]])
+        ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
 ##        print ch_pos
         if ch_pos:
-            post_value(2,data,need_pos,ch_pos,case_num)
+            post_value(sheet,data,need_pos,ch_pos,case_num)
         else:
-            print "Can't find this channel" + data[item_ref["channel"]]
+            print "Can't find this channel " + data[item_ref["channel"]]
             continue
+
+def check_same_row(data, last_data_conf):
+    if not last_data_conf:
+        return False
+
+    conf = get_data_conf(data)
+    if conf == last_data_conf:
+        return True
+    return False
+
+def get_data_conf(data):
+    return (data["standard"],data["rate"],data["BW"],data["stream"],data["antenna"])
 
 def post_value(sheet,data,start,ch_pos,case_num):
     for i in range(case_num):
@@ -86,26 +109,23 @@ def post_value(sheet,data,start,ch_pos,case_num):
                     post_pos = (start[0]+i,ch_pos[1]+int(antennas[s]))
                     Range(sheet,post_pos).value = value[s]
             else:
-                post_pos = (start[0]+i,ch_pos[1])
+                post_pos = (start[0]+i,ch_pos[1]+int(antennas[0]))
                 Range(sheet,post_pos).value = value[0]
 
 def meet_standard(data,fill_pos):
-##    for k in fill_pos.keys():
-##        standard, BW, stream = k
-##        if data[item_ref["standard"]] in standard and data[item_ref["BW"]] in BW and data[item_ref["stream"]] in stream:
-##            return fill_pos[k]
-
     k = (data[item_ref["standard"]], data[item_ref["BW"]], data[item_ref["stream"]])
+
     if k in fill_pos:
+        return fill_pos[k]
+
+    if k[0] in fill_pos:
         return fill_pos[k]
     return None
 
 def meet_rate(data,fill_pos):
     for k in fill_pos.keys():
         if data[item_ref["rate"]] in k:
-            #
             return fill_pos[k]
-
     return None
 
 if __name__ == '__main__':
