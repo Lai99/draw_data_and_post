@@ -39,7 +39,25 @@ def search_value(value, start, end):
             print Range((row,col)).value
             if Range((row,col)).value == value:
                 return (row,col)
-    return False
+    return None
+
+def manage_standard(sheet,pos):
+    s = Range(sheet,pos).value
+    if "\n" in s:
+        standard_rate, stream = s.split("\n")
+        standard_rate = standard_rate.replace(" ","")
+        standard, rate = standard_rate.split("-")
+        stream = stream.split(" ")[0]
+        rate = rate.split("T")[-1]
+##        print (standard,rate,stream)
+        return (standard,rate,stream)
+    else:
+##        print s
+        return (s,None,None)
+
+def manage_modulation(sheet,pos):
+    s = Range(sheet,pos).value
+    Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)
 
 def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5, start_x = 6):
     """
@@ -65,7 +83,7 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
         if Range(sheet,(row,module_x)).value != None:    #Collect Modulations in a standard
             if case_count != 0:
                 #Add "module and rate" with "value start position and case numbers"
-                module_items[Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)] = ((last_module[0], start_x),case_count)
+                module_items[manage_modulation(sheet,last_module)] = ((last_module[0], start_x),case_count)
 ##                Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
                 case_count = 0
             last_module = (row,module_x)
@@ -73,7 +91,7 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
         if Range(sheet,(row,standard_x)).value != None:
             if  Range(sheet,(row,standard_x)).value != anchor:
                 if module_items:   #if true means it has a modulation collection
-                    items[Range(sheet,last_standard).value] = module_items
+                    items[manage_standard(sheet,last_standard)] = module_items
 ##                    Range(sheet,(last_standard[0],12)).value = module_items.keys()
 ##                    print module_items.values()
                     module_items = {}
@@ -87,23 +105,31 @@ def get_fill_pos(sheet,anchor,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5
     #Don't forget last one have no end point
     if case_count != 0:
         #Add "module and rate" with "value start position and case numbers"
-        module_items[Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)] = ((last_module[0], start_x),case_count)
+        module_items[manage_modulation(sheet,last_module)] = ((last_module[0], start_x),case_count)
 ##        Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
 
     if module_items:
-        items[Range(sheet,(row,standard_x)).value] = module_items
+        items[manage_standard(sheet,last_standard)] = module_items
 ##        Range(sheet,(last_standard[0],12)).value = module_items.keys()
 ##        print module_items.values()
     return items
 
-def get_channel_pos(sheet, pos, anchor):
+def get_channel_start(sheet, pos, anchor):
     row, col = pos[0], pos[1]
     while row != 0:
         if anchor in str(Range(sheet,(row,col)).value):
             return (row,col)
         else:
             row -= 1
-    return False
+    return None
+
+def get_channel_pos(sheet, pos, ch):
+    row, col = pos[0], pos[1]
+    while Range(sheet,(row,col)).value:
+        if ch in Range(sheet,(row,col)).value:
+            return (row, col)
+        col += 1
+    return None
 
 if __name__ == '__main__':
     pass

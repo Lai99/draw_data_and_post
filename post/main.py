@@ -11,8 +11,8 @@ import subprocess
 import time
 import datetime
 from xlwings import Workbook, Sheet, Range, Chart
-import template_search
-import data_mange
+##import template_search
+##import data_mange
 import sheet_post
 
 def get_folder_filenames(path):
@@ -35,13 +35,13 @@ def make_folder(path,folder_names):
         if not os.path.exists(os.path.join(path,folder)):
             os.makedirs(os.path.join(path,folder))
 
-def post(data_path):
-    wb = Workbook.caller()
-
-    fill_pos = template_search.get_fill_pos(2,"Standard")
-##    print len(fill_pos)
-    for data in data_mange.load_data(date_path):
-        fill_pos[data["standard"]]
+##def post(data_path):
+##    wb = Workbook.caller()
+##
+##    fill_pos = template_search.get_fill_pos(2,"Standard")
+####    print len(fill_pos)
+##    for data in data_mange.load_data(date_path):
+##        fill_pos[data["standard"]]
 
 
 
@@ -64,8 +64,12 @@ if __name__ == '__main__':
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'usi.xls'))
     Workbook.set_mock_caller(path)
     time.sleep(6)
-    data_path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
-    post(data_path)
+    wb = Workbook.caller()
+##    data_path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"\
+    data_path = r"D:\python task\draw_data_and_post\post\TX3.csv"
+    sheet_post.post(data_path)
+##    data_path = r"D:\python task\draw_data_and_post\post\TX4.csv"
+##    sheet_post.post(data_path)
 ##    a=raw_input()
 ##
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())
