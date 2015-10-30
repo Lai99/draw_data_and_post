@@ -61,7 +61,7 @@ def load_data(path):
 
 if __name__ == '__main__':
 ##    pass
-##    path = (r"D:\python task\draw_data_and_post\post\TX.csv")
-    path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
+    path = (r"D:\python task\draw_data_and_post\post\TX.csv")
+##    path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
     for i in load_data(path):
         print i
