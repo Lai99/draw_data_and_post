@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
 
 ##    subprocess.Popen([r"D:\game\abstract\draw_data_and_post\post\t 1.xls"],shell=True).pid
-    subprocess.Popen([r"D:\python task\draw_data_and_post\post\t1.xls"],shell=True).pid
+    subprocess.Popen([os.path.join(os.path.dirname(__file__), 't1.xls')],shell=True).pid
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), 't1.xls'))
     Workbook.set_mock_caller(path)
     time.sleep(6)
@@ -62,19 +62,29 @@ if __name__ == '__main__':
 ##    wb.screen_updating = False
 ##    data_path = r"D:\game\abstract\draw_data_and_post\post\t1.csv"
 ##    data_path = r"D:\python task\WAC740\IQFact_5G_Tx_SISO_HT20_result.csv"
-    test_file = [r"D:\python task\WAC740\IQFact_5G_Tx_SISO_HT40_result.csv",
-                 r"D:\python task\WAC740\IQFact_5G_Tx_SISO_VHT40_result.csv",
-                 r"D:\python task\WAC740\IQFact_5G_Tx_SISO_HT20_result.csv",
-                 r"D:\python task\WAC740\IQFact_5G_Tx_SISO_VHT20_result.csv",
-                 r"D:\python task\WAC740\IQFact_5G_Tx_SISO_VHT80_result.csv",
-                 r"D:\python task\WAC740\IQFact_5G_Tx_SISO_11a_result.csv"]
-##    for data_path in test_file:
-##        print data_path
-##        sheet_post.post(data_path)
+    t = r"D:\game\abstract\WAC740"
+    test_file_5G = [t + r"\IQFact_5G_Tx_SISO_HT40_result.csv",
+                 t + r"\IQFact_5G_Tx_SISO_VHT40_result.csv",
+                 t + r"\IQFact_5G_Tx_SISO_HT20_result.csv",
+                 t + r"\IQFact_5G_Tx_SISO_VHT20_result.csv",
+                 t + r"\IQFact_5G_Tx_SISO_VHT80_result.csv",
+                 t + r"\IQFact_5G_Tx_SISO_11a_result.csv"]
+
+    test_file_2G = [t + r"\IQFact_2G_Tx_SISO_11b_2484_result.csv",
+                 t + r"\IQFact_2G_Tx_SISO_11b_result.csv",
+                 t + r"\IQFact_2G_Tx_SISO_11g_result.csv",
+                 t + r"\IQFact_2G_Tx_SISO_HT20_result.csv",
+                 t + r"\IQFact_2G_Tx_SISO_HT40_result.csv",
+                 t + r"\IQFact_2G_Tx_SISO_VHT20_result.csv",
+                 t + r"\IQFact_2G_Tx_SISO_VHT40_result.csv"]
+
+    for data_path in test_file_2G:
+        print data_path
+        sheet_post.post(data_path)
 
 ##    wb.screen_updating = True
-    data_path = r"D:\python task\WAC740\IQFact_5G_Tx_SISO_11a_result.csv"
-    sheet_post.post(data_path)
+##    data_path = test_file_2G[4]
+##    sheet_post.post(data_path)
 ##    a=raw_input()
 ##
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())

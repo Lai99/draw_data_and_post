@@ -27,22 +27,34 @@ sheet_item_ref = {"Tx Power":"power",
                  }
 
 def post_power(data):
-    return data["power"].split(",")
+    if data["power"]:
+        return data["power"].split(",")
+    return data["power"]
 
 def post_evm(data):
-    return data["EVM"].split(",")
+    if data["EVM"]:
+        return data["EVM"].split(",")
+    return data["EVM"]
 
 def post_mask(data):
-    return data["Mask"].split(",")
+    if data["Mask"]:
+        return data["Mask"].split(",")
+    return data["Mask"]
 
 def post_freq_err(data):
-    return list([data["F_ER"]])
+    if data["F_ER"]:
+        return list([data["F_ER"]])
+    return data["F_ER"]
 
 def post_cr_err(data):
-    return list([data["CR_ER"]])
+    if data["CR_ER"]:
+        return list([data["CR_ER"]])
+    return data["CR_ER"]
 
 def post_flatness(data):
-    return data["Flatness"].split(":")
+    if data["Flatness"]:
+        return data["Flatness"].split(":")
+    return data["Flatness"]
 
 post_func = {"power":post_power,
             "EVM":post_evm,
@@ -54,11 +66,11 @@ post_func = {"power":post_power,
 
 def post(data_path):
     #
-    sheet = 3
+    sheet = 2
     #
     standard_anchor = "Standard"
     channel_anchor = "Ch"
-    band = "5G"
+    band = "2G"
     fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band)
 ##    print fill_pos.keys()
 ##    print all_anchor_row
@@ -108,13 +120,14 @@ def post_value(sheet,data,start,ch_pos,case_num):
         if case in sheet_item_ref.keys():
             value = post_func[sheet_item_ref[case]](data)
             antennas = data["antenna"].split(",")
-            if len(value) > 1:
-                for s in range(int(data["stream"])):
-                    post_pos = (start[0]+i,ch_pos[1]+int(antennas[s]))
-                    Range(sheet,post_pos).value = value[s]
-            else:
-                post_pos = (start[0]+i,ch_pos[1]+int(antennas[0]))
-                Range(sheet,post_pos).value = value[0]
+            if value:
+                if len(value) > 1:
+                    for s in range(int(data["stream"])):
+                        post_pos = (start[0]+i,ch_pos[1]+int(antennas[s]))
+                        Range(sheet,post_pos).value = value[s]
+                else:
+                    post_pos = (start[0]+i,ch_pos[1]+int(antennas[0]))
+                    Range(sheet,post_pos).value = value[0]
 
 def meet_standard(data,fill_pos):
     k = (data[item_ref["standard"]], data[item_ref["BW"]], data[item_ref["stream"]])

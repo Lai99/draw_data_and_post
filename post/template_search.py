@@ -66,18 +66,33 @@ def manage_standard_2G(sheet,pos):
     if "\n" in s:
         standard_rate, stream = s.split("\n")
         standard_rate = standard_rate.strip()
-        print standard_rate
         standard, rate = standard_rate.split(" ")
         stream = stream.split(" ")[0]
         rate = rate.split("M")[0]
 ##        print (standard,rate,stream)
+##************************************************
+## from sheet will get "11gac" but data is "11ac"
+        if standard == "11gac":
+            standard = "11ac"
+##************************************************
         return (standard,rate,stream)
     else:
 ##        print s
+##************************************************
+## for match data "11g" actually got "11ag
+        if s == "11g":
+            s = "11ag"
+##************************************************
         return s
 
 def manage_modulation(sheet,pos):
-    modulation = Range(sheet,pos).value.split("-")[0]
+##************************************************
+## for match 2.4G 11b "DSSS-CCK". data will get "CCK" instead of "DSSS"
+    if "CCK" in Range(sheet,pos).value:
+        modulation = Range(sheet,pos).value.split("-")[1]
+##************************************************
+    else:
+        modulation = Range(sheet,pos).value.split("-")[0]
     return modulation.strip()
 
 def mange_rate(sheet,pos):
@@ -85,7 +100,9 @@ def mange_rate(sheet,pos):
 
 def make_module_item_key(sheet, pos, offset):
     if Range(sheet,(pos[0],offset)).value:
-        return manage_modulation(sheet,pos) + "-" + str(Range(sheet,(pos[0],offset)).value)
+        rate = str(Range(sheet,(pos[0],offset)).value)
+        rate = rate.replace(".","_")
+        return manage_modulation(sheet,pos) + "-" + rate
     else:
         return manage_modulation(sheet,pos)
 
