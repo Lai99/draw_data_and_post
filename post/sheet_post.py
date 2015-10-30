@@ -60,7 +60,8 @@ def post(data_path):
     channel_anchor = "Ch"
     band = "5G"
     fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band)
-    print all_anchor_row
+##    print fill_pos.keys()
+##    print all_anchor_row
     last_data_conf = None
     need_pos = None
     case_num = 0
@@ -99,7 +100,7 @@ def check_same_row(data, last_data_conf):
     return False
 
 def get_data_conf(data):
-    return (data["standard"],data["rate"],data["BW"],data["stream"],data["antenna"])
+    return (data["standard"],data["rate"],data["BW"],data["stream"])
 
 def post_value(sheet,data,start,ch_pos,case_num):
     for i in range(case_num):
@@ -122,14 +123,24 @@ def meet_standard(data,fill_pos):
         return fill_pos[k]
 
     if k[0] in fill_pos:
-        return fill_pos[k]
+        return fill_pos[k[0]]
     print "Can't find this channel " + data[item_ref["channel"]]
     return None
 
 def meet_rate(data,fill_pos):
+##    print fill_pos.keys()
     for k in fill_pos.keys():
-        if data[item_ref["rate"]] in k:
-            return fill_pos[k]
+        if "-" in data[item_ref["rate"]]:
+            # Use "in" not "==" becasue the data["rate"] will look like "OFDM-6" but key is "OFDM-6.0"
+            if data[item_ref["rate"]] in k:
+                return fill_pos[k]
+        else:
+            if "-" in k:
+                if data[item_ref["rate"]] == k.split("-")[0]:
+                    return fill_pos[k]
+            else:
+                if data[item_ref["rate"]] == k:
+                    return fill_pos[k]
     print "Can't find this modulation " + data[item_ref["rate"]]
     return None
 

@@ -54,6 +54,11 @@ def manage_standard_5G(sheet,pos):
         return (standard,rate,stream)
     else:
 ##        print s
+##************************************************
+## for match data "11a" actually got "11ag
+        if s == "11a":
+            s = "11ag"
+##************************************************
         return s
 
 def manage_standard_2G(sheet,pos):
@@ -73,7 +78,7 @@ def manage_standard_2G(sheet,pos):
 
 def manage_modulation(sheet,pos):
     modulation = Range(sheet,pos).value.split("-")[0]
-    return modulation
+    return modulation.strip()
 
 def mange_rate(sheet,pos):
     pass
@@ -123,6 +128,11 @@ def get_fill_pos(sheet,anchor,band,standard_x = 1,module_x = 2,rate_x = 3, case_
         if Range(sheet,(row,standard_x)).value != None:
             if  Range(sheet,(row,standard_x)).value != anchor:
                 if module_items:   #if true means it has a modulation collection
+##************************************************************************************************
+##  5G sheet has a sheet tail. When reach this, stop search and record "standard"
+                    if Range(sheet,(row,standard_x)).value == "Info":
+                        break
+##************************************************************************************************
                     items[standard_manage_func[band](sheet,last_standard)] = module_items
 ##                    Range(sheet,(last_standard[0],12)).value = module_items.keys()
 ##                    print module_items.values()
@@ -151,32 +161,26 @@ def get_fill_pos(sheet,anchor,band,standard_x = 1,module_x = 2,rate_x = 3, case_
 def get_channel_start(sheet, pos, anchor, all_anchor_row = None):
     row, col = pos[0], pos[1]
     if all_anchor_row:
-        last_row = 0
-        for r in all_anchor_row:
-            if r - row > 0:
-                if last_row == 0:
-                    break
-                else:
-                    return (last_row,col)
+        if row - all_anchor_row[0] > 0:
+            if len(all_anchor_row) == 1:
+                return (all_anchor_row[0],col)
             else:
-                last_row = r
-    else:
-        while row != 0:
-            if anchor in str(Range(sheet,(row,col)).value):
-                return (row,col)
-            row -= 1
-    print "Can't find channel form local in sheet"
+                for i in range(len(all_anchor_row)):
+                    if row - all_anchor_row[i] < 0:
+                        return (all_anchor_row[i-1],col)
+                return (all_anchor_row[-1],col)
+    print "Can't find channel form location in sheet"
     return None
 
 def get_channel_pos(sheet, pos, ch):
     row, col = pos[0], pos[1]
-    count = 16
+    count = 31
     while count > 0:
         while Range(sheet,(row,col)).value:
             if ch in Range(sheet,(row,col)).value:
                 return (row, col)
             col += 1
-            count = 16
+            count = 31
         col += 1
         count -= 1
     print "Can't find this channel in channel form"
