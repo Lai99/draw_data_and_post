@@ -11,9 +11,8 @@ import subprocess
 import time
 import datetime
 from xlwings import Workbook, Sheet, Range, Chart
-##import template_search
-##import data_mange
 import sheet_post
+import template_search
 
 def get_folder_filenames(path):
     """
@@ -34,6 +33,25 @@ def make_folder(path,folder_names):
     for folder in folder_names:
         if not os.path.exists(os.path.join(path,folder)):
             os.makedirs(os.path.join(path,folder))
+
+def post(data_path):
+    #initial get all sheet setup in template
+    standard_anchor = "Standard"
+    channel_anchor = "Ch"
+    sheet_setup = {}
+    # for test
+    sheet = 5
+    band = "5G"
+    #
+    fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,6,7)
+##    print fill_pos
+##    print all_anchor_row
+
+    sheet_setup["TX_2G"] = [fill_pos, all_anchor_row]
+    #judge tx/rx, 2.4/5G -> pass data path to right post module
+##    sheet = 3
+##    band = "5G"
+    sheet_post.post(data_path,sheet,sheet_setup["TX_2G"], standard_anchor,channel_anchor,band)
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)
@@ -78,14 +96,24 @@ if __name__ == '__main__':
                  t + r"\IQFact_2G_Tx_SISO_VHT20_result.csv",
                  t + r"\IQFact_2G_Tx_SISO_VHT40_result.csv"]
 
-    for data_path in test_file_2G:
-        print data_path
-        sheet_post.post(data_path)
+    RX_2G = [t + r"\IQFact_2G_Rx_MIMO_result.csv",
+             t + r"\IQFact_2G_Rx_SIMO_result.csv",
+             t + r"\IQFact_2G_Rx_SISO_result.csv"]
+
+    RX_5G = [t + r"\IQFact_5G_Rx_MIMO_result.csv",
+             t + r"\IQFact_5G_Rx_SIMO_result.csv",
+             t + r"\IQFact_5G_Rx_SISO_result.csv"]
+
+##    for data_path in RX_2G:
+##        print data_path
+##        post(data_path)
+
 
 ##    wb.screen_updating = True
-##    data_path = test_file_2G[4]
-##    sheet_post.post(data_path)
+##    data_path = test_file_2G[0]
+    data_path = RX_5G[2]
+##    data_path = t + r"\t.csv"
+    post(data_path)
 ##    a=raw_input()
-##
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())
 ##

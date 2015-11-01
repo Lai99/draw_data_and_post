@@ -40,7 +40,14 @@ def get_antenna(line):
 
 def get_power(line):
     if len(line) > 8:
-        return line[8]
+        if line[7] == "Power":
+            return line[8]
+    return None
+
+def get_sens(line):
+    if len(line) > 8:
+        if line[7] == "SENS":
+            return line[8]
     return None
 
 get_func = {"standard":get_standard,
@@ -49,7 +56,8 @@ get_func = {"standard":get_standard,
             "BW":get_bw,
             "stream":get_stream,
             "antenna":get_antenna,
-            "power":get_power
+            "power":get_power,
+            "sens":get_sens
            }
 def load_data(path):
     data = {}
@@ -73,8 +81,14 @@ def load_data(path):
                         data["stream"] = get_func["stream"](line)
                     if get_func["antenna"](line):
                         data["antenna"] = get_func["antenna"](line)
+                    # TX power
                     if get_func["power"](line):
                         data["power"] = get_func["power"](line)
+
+                    # RX SENS
+                    if get_func["sens"](line):
+                        data["sens"] = get_func["sens"](line)
+
                 else:
                     if len(line) > 1:
                         data[line[0]] = line[1]
@@ -87,7 +101,7 @@ def load_data(path):
 if __name__ == '__main__':
 ##    pass
     t = r"D:\game\abstract\WAC740"
-    path = (t + r"\IQFact_2G_Tx_SISO_11b_2484_result.csv")
+    path = (t + r"\IQFact_5G_Rx_SIMO_result.csv")
 ##    path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
     for i in load_data(path):
         print i

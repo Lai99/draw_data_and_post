@@ -9,7 +9,7 @@
 
 from xlwings import Workbook, Sheet, Range, Chart
 import template_search
-import data_mange
+import data_manage
 
 item_ref = {"standard":"standard",
             "rate":"rate",
@@ -23,7 +23,8 @@ sheet_item_ref = {"Tx Power":"power",
                   "Mask":"Mask",
                   "Freq error":"F_ER",
                   "SC error":"CR_ER",
-                  "Flatness":"Flatness"
+                  "Flatness":"Flatness",
+                  "Rx Power":"SENS"
                  }
 
 def post_power(data):
@@ -56,22 +57,24 @@ def post_flatness(data):
         return data["Flatness"].split(":")
     return data["Flatness"]
 
-post_func = {"power":post_power,
+def post_sens(data):
+    if data["sens"]:
+        return data["sens"].split(",")
+    return data["sens"]
+
+post_func= {# TX
+            "power":post_power,
             "EVM":post_evm,
             "Mask":post_mask,
             "F_ER":post_freq_err,
             "CR_ER":post_cr_err,
-            "Flatness":post_flatness
+            "Flatness":post_flatness,
+            # RX
+            "SENS":post_sens
             }
 
-def post(data_path):
-    #
-    sheet = 2
-    #
-    standard_anchor = "Standard"
-    channel_anchor = "Ch"
-    band = "2G"
-    fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band)
+def post(data_path, sheet, sheet_setup, standard_anchor, channel_anchor, band):
+    fill_pos, all_anchor_row = sheet_setup[0], sheet_setup[1]
 ##    print fill_pos.keys()
 ##    print all_anchor_row
     last_data_conf = None
@@ -80,7 +83,7 @@ def post(data_path):
     ch_start = None
     ch_pos = None
 
-    for data in data_mange.load_data(data_path):
+    for data in data_manage.load_data(data_path):
         if not check_same_row(data, last_data_conf):
 ##            print data
 ##            print fill_pos.keys()
@@ -93,9 +96,9 @@ def post(data_path):
                 continue
             print need_pos, case_num
             ch_start = template_search.get_channel_start(sheet,need_pos,channel_anchor,all_anchor_row)
-        print ch_start
+        print ch_start, "ch start"
         ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
-        print ch_pos
+        print ch_pos, "ch pos"
         if ch_pos:
             post_value(sheet,data,need_pos,ch_pos,case_num)
             ch_start = ch_pos
@@ -117,17 +120,23 @@ def get_data_conf(data):
 def post_value(sheet,data,start,ch_pos,case_num):
     for i in range(case_num):
         case = Range(sheet,(start[0]+i,start[1]-1)).value
+##        print case
         if case in sheet_item_ref.keys():
             value = post_func[sheet_item_ref[case]](data)
+##            print data
+##            print value
             antennas = data["antenna"].split(",")
+##            print antennas, len(antennas)
             if value:
                 if len(value) > 1:
-                    for s in range(int(data["stream"])):
-                        post_pos = (start[0]+i,ch_pos[1]+int(antennas[s]))
-                        Range(sheet,post_pos).value = value[s]
+##                    for s in range(int(data["stream"])):
+                    for idx in range(len(antennas)):
+                        post_pos = (start[0]+i,ch_pos[1]+int(antennas[idx]))
+                        Range(sheet,post_pos).value = value[idx]
                 else:
-                    post_pos = (start[0]+i,ch_pos[1]+int(antennas[0]))
-                    Range(sheet,post_pos).value = value[0]
+                    for idx in range(len(antennas)):
+                        post_pos = (start[0]+i,ch_pos[1]+int(antennas[idx]))
+                        Range(sheet,post_pos).value = value[0]
 
 def meet_standard(data,fill_pos):
     k = (data[item_ref["standard"]], data[item_ref["BW"]], data[item_ref["stream"]])

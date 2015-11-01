@@ -138,7 +138,6 @@ def get_fill_pos(sheet,anchor,band,standard_x = 1,module_x = 2,rate_x = 3, case_
                 #Add "module and rate" with "value start position and case numbers"
                 k = make_module_item_key(sheet, last_module, rate_x)
                 module_items[k] = ((last_module[0], start_x),case_count)
-##                Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
                 case_count = 0
             last_module = (row,module_x)
 
@@ -167,7 +166,6 @@ def get_fill_pos(sheet,anchor,band,standard_x = 1,module_x = 2,rate_x = 3, case_
         #Add "module and rate" with "value start position and case numbers"
         k = make_module_item_key(sheet, last_module, rate_x)
         module_items[k] = ((last_module[0], start_x),case_count)
-##        Range(sheet,(last_module[0],7)).value = [str(((last_module[0], start_x),case_count)),Range(sheet,last_module).value + " " + str(Range(sheet,(last_module[0],rate_x)).value)]
 
     if module_items:
         items[standard_manage_func[band](sheet,last_standard)] = module_items
