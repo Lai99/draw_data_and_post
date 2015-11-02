@@ -14,6 +14,8 @@ from xlwings import Workbook, Sheet, Range, Chart
 import sheet_post
 import template_search
 
+sheet_setup = {}
+
 def get_folder_filenames(path):
     """
     Get all file names with folder under the path
@@ -34,11 +36,30 @@ def make_folder(path,folder_names):
         if not os.path.exists(os.path.join(path,folder)):
             os.makedirs(os.path.join(path,folder))
 
+def get_sheet_arrange():
+    sheet_names = [i.name.lower() for i in Sheet.all()]
+    sheet_ref = {}
+    for idx in range(len(sheet_names)):
+        if "2.4ghz" in sheet_names[idx]:
+            if "tx" in sheet_names[idx]:
+                sheet_ref["TX_2G"] = idx + 1
+            elif "sensitivity" in sheet_names[idx]:
+                sheet_ref["RX_2G"] = idx + 1
+        elif "5ghz" in sheet_names[idx]:
+            if "tx" in sheet_names[idx]:
+                sheet_ref["TX_5G"] = idx + 1
+            elif "sensitivity" in sheet_names[idx]:
+                sheet_ref["RX_5G"] = idx + 1
+    return sheet_ref
+
 def post(data_path):
-    #initial get all sheet setup in template
+    #initial setup
     standard_anchor = "Standard"
     channel_anchor = "Ch"
-    sheet_setup = {}
+    #
+    sheet_arrange = get_sheet_arrange()
+    print sheet_arrange
+    return 0
     # for test
     sheet = 4
     band = "2G"
@@ -52,6 +73,9 @@ def post(data_path):
 ##    sheet = 3
 ##    band = "5G"
     sheet_post.post(data_path,sheet,sheet_setup["TX_2G"], standard_anchor,channel_anchor,band)
+
+def save_report():
+    pass
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)
@@ -78,17 +102,25 @@ if __name__ == '__main__':
     time.sleep(6)
     wb = Workbook.caller()
 ##    wb.screen_updating = False
-##    data_path = r"D:\game\abstract\draw_data_and_post\post\t1.csv"
-##    data_path = r"D:\python task\WAC740\IQFact_5G_Tx_SISO_HT20_result.csv"
-    t = r"D:\python task\WAC740"
+
+    for folder in folder_file_names:
+        for data_name in folder_file_names[folder]:
+            data_path = os.path.join(log_path,folder,data_name)
+##            print data_path
+            post(data_path)
+            save_report()
+
+
+
+    t = r"D:\game\abstract\WAC740"
     TX_5G = [t + r"\IQFact_5G_Tx_SISO_HT40_result.csv",
              t + r"\IQFact_5G_Tx_SISO_VHT40_result.csv",
              t + r"\IQFact_5G_Tx_SISO_HT20_result.csv",
              t + r"\IQFact_5G_Tx_SISO_VHT20_result.csv",
              t + r"\IQFact_5G_Tx_SISO_VHT80_result.csv",
-             t + r"\IQFact_5G_Tx_SISO_11a_result.csv",
-             t + r"\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv",
-             t + r"\WAC7X0-S1-5G-3X3-MIMO-n-Tx-New_Result.csv"]
+             t + r"\IQFact_5G_Tx_SISO_11a_result.csv",]
+##             t + r"\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv",
+##             t + r"\WAC7X0-S1-5G-3X3-MIMO-n-Tx-New_Result.csv"]
 
     TX_2G = [t + r"\IQFact_2G_Tx_SISO_11b_2484_result.csv",
              t + r"\IQFact_2G_Tx_SISO_11b_result.csv",
@@ -106,9 +138,9 @@ if __name__ == '__main__':
              t + r"\IQFact_5G_Rx_SIMO_result.csv",
              t + r"\IQFact_5G_Rx_SISO_result.csv"]
 ##
-    for data_path in RX_2G:
-        print data_path
-        post(data_path)
+##    for data_path in RX_2G:
+##        print data_path
+##        post(data_path)
 
 
 ##    wb.screen_updating = True
