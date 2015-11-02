@@ -40,8 +40,8 @@ def post(data_path):
     channel_anchor = "Ch"
     sheet_setup = {}
     # for test
-    sheet = 5
-    band = "5G"
+    sheet = 4
+    band = "2G"
     #
     fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,6,7)
 ##    print fill_pos
@@ -80,21 +80,23 @@ if __name__ == '__main__':
 ##    wb.screen_updating = False
 ##    data_path = r"D:\game\abstract\draw_data_and_post\post\t1.csv"
 ##    data_path = r"D:\python task\WAC740\IQFact_5G_Tx_SISO_HT20_result.csv"
-    t = r"D:\game\abstract\WAC740"
-    test_file_5G = [t + r"\IQFact_5G_Tx_SISO_HT40_result.csv",
-                 t + r"\IQFact_5G_Tx_SISO_VHT40_result.csv",
-                 t + r"\IQFact_5G_Tx_SISO_HT20_result.csv",
-                 t + r"\IQFact_5G_Tx_SISO_VHT20_result.csv",
-                 t + r"\IQFact_5G_Tx_SISO_VHT80_result.csv",
-                 t + r"\IQFact_5G_Tx_SISO_11a_result.csv"]
+    t = r"D:\python task\WAC740"
+    TX_5G = [t + r"\IQFact_5G_Tx_SISO_HT40_result.csv",
+             t + r"\IQFact_5G_Tx_SISO_VHT40_result.csv",
+             t + r"\IQFact_5G_Tx_SISO_HT20_result.csv",
+             t + r"\IQFact_5G_Tx_SISO_VHT20_result.csv",
+             t + r"\IQFact_5G_Tx_SISO_VHT80_result.csv",
+             t + r"\IQFact_5G_Tx_SISO_11a_result.csv",
+             t + r"\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv",
+             t + r"\WAC7X0-S1-5G-3X3-MIMO-n-Tx-New_Result.csv"]
 
-    test_file_2G = [t + r"\IQFact_2G_Tx_SISO_11b_2484_result.csv",
-                 t + r"\IQFact_2G_Tx_SISO_11b_result.csv",
-                 t + r"\IQFact_2G_Tx_SISO_11g_result.csv",
-                 t + r"\IQFact_2G_Tx_SISO_HT20_result.csv",
-                 t + r"\IQFact_2G_Tx_SISO_HT40_result.csv",
-                 t + r"\IQFact_2G_Tx_SISO_VHT20_result.csv",
-                 t + r"\IQFact_2G_Tx_SISO_VHT40_result.csv"]
+    TX_2G = [t + r"\IQFact_2G_Tx_SISO_11b_2484_result.csv",
+             t + r"\IQFact_2G_Tx_SISO_11b_result.csv",
+             t + r"\IQFact_2G_Tx_SISO_11g_result.csv",
+             t + r"\IQFact_2G_Tx_SISO_HT20_result.csv",
+             t + r"\IQFact_2G_Tx_SISO_HT40_result.csv",
+             t + r"\IQFact_2G_Tx_SISO_VHT20_result.csv",
+             t + r"\IQFact_2G_Tx_SISO_VHT40_result.csv"]
 
     RX_2G = [t + r"\IQFact_2G_Rx_MIMO_result.csv",
              t + r"\IQFact_2G_Rx_SIMO_result.csv",
@@ -103,17 +105,17 @@ if __name__ == '__main__':
     RX_5G = [t + r"\IQFact_5G_Rx_MIMO_result.csv",
              t + r"\IQFact_5G_Rx_SIMO_result.csv",
              t + r"\IQFact_5G_Rx_SISO_result.csv"]
-
-##    for data_path in RX_2G:
-##        print data_path
-##        post(data_path)
+##
+    for data_path in RX_2G:
+        print data_path
+        post(data_path)
 
 
 ##    wb.screen_updating = True
-##    data_path = test_file_2G[0]
-    data_path = RX_5G[2]
-##    data_path = t + r"\t.csv"
-    post(data_path)
+##    data_path = TX_5G[0]
+##    data_path = RX_5G[2]
+##    data_path = t + r"\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
+##    post(data_path)
 ##    a=raw_input()
 ##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())
 ##

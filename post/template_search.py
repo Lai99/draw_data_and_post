@@ -201,5 +201,12 @@ def get_channel_pos(sheet, pos, ch):
     print "Can't find this channel in channel form"
     return None
 
+def find_ch_sum(sheet,ch_pos):
+    count = 0
+    match = (Range(sheet, ch_pos).value).replace(" ","")
+    while Range(sheet, (ch_pos[0],ch_pos[1]+count)).value and (Range(sheet, (ch_pos[0],ch_pos[1]+count)).value).replace(" ","") == match:
+        count += 1
+    return count - 1
+
 if __name__ == '__main__':
     pass

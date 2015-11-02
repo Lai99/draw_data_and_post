@@ -29,6 +29,16 @@ def get_bw(line):
     return None
 
 def get_stream(line):
+######### 11n RX stream data will always get '1', need to meet really config 1/2/3/4
+##    if get_standard(line):
+##        if get_standard(line) == "11n":
+##            if get_antenna(line):
+##                t = get_antenna(line).split(",")
+##                return str(len(t))
+##        if len(line) > 5:
+##            return line[5]
+###################################################################################
+##    else:
     if len(line) > 5:
         return line[5]
     return None
@@ -100,8 +110,8 @@ def load_data(path):
 
 if __name__ == '__main__':
 ##    pass
-    t = r"D:\game\abstract\WAC740"
-    path = (t + r"\IQFact_5G_Rx_SIMO_result.csv")
+    t = r"D:\python task\WAC740"
+    path = (t + r"\IQFact_2G_Rx_MIMO_result.csv")
 ##    path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
     for i in load_data(path):
         print i
