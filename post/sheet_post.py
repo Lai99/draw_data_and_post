@@ -75,7 +75,7 @@ post_func= {# TX
             "SENS":post_sens
             }
 
-def post(data_path, sheet, sheet_setup, standard_anchor, channel_anchor, band):
+def post(data_path, sheet, sheet_setup, channel_anchor):
     fill_pos, all_anchor_row = sheet_setup[0], sheet_setup[1]
 ##    print fill_pos.keys()
 ##    print all_anchor_row
@@ -86,6 +86,7 @@ def post(data_path, sheet, sheet_setup, standard_anchor, channel_anchor, band):
     ch_pos = None
 
     for data in data_manage.load_data(data_path):
+        Sheet(sheet).activate()
         if not check_same_row(data, last_data_conf):
 ##            print data
 ##            print fill_pos.keys()

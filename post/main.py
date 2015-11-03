@@ -10,11 +10,12 @@ import os, sys
 import subprocess
 import time
 import datetime
-from xlwings import Workbook, Sheet, Range, Chart
+from xlwings import Application,Workbook, Sheet, Range, Chart
 import sheet_post
 import template_search
 
 sheet_setup = {}
+sheet_arrange = {}
 
 def get_folder_filenames(path):
     """
@@ -42,40 +43,66 @@ def get_sheet_arrange():
     for idx in range(len(sheet_names)):
         if "2.4ghz" in sheet_names[idx]:
             if "tx" in sheet_names[idx]:
-                sheet_ref["TX_2G"] = idx + 1
+                sheet_ref["TX2G"] = idx + 1
             elif "sensitivity" in sheet_names[idx]:
-                sheet_ref["RX_2G"] = idx + 1
+                sheet_ref["RX2G"] = idx + 1
         elif "5ghz" in sheet_names[idx]:
             if "tx" in sheet_names[idx]:
-                sheet_ref["TX_5G"] = idx + 1
+                sheet_ref["TX5G"] = idx + 1
             elif "sensitivity" in sheet_names[idx]:
-                sheet_ref["RX_5G"] = idx + 1
+                sheet_ref["RX5G"] = idx + 1
     return sheet_ref
 
-def post(data_path):
+def post(data_path, data_name):
     #initial setup
     standard_anchor = "Standard"
     channel_anchor = "Ch"
-    #
-    sheet_arrange = get_sheet_arrange()
-    print sheet_arrange
-    return 0
-    # for test
-    sheet = 4
-    band = "2G"
-    #
-    fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,6,7)
-##    print fill_pos
-##    print all_anchor_row
+    band = find_band(data_name)
+    tx_or_rx = find_tx_rx(data_name)
+    if not (band and tx_or_rx):
+        print data_path + " is NOT a legal data file."
+        return 1
 
-    sheet_setup["TX_2G"] = [fill_pos, all_anchor_row]
-    #judge tx/rx, 2.4/5G -> pass data path to right post module
-##    sheet = 3
-##    band = "5G"
-    sheet_post.post(data_path,sheet,sheet_setup["TX_2G"], standard_anchor,channel_anchor,band)
+    sheet = sheet_arrange[tx_or_rx + band]
+##    print data_name, band, tx_or_rx, sheet
+##    print sheet_setup.keys()
+    if not (tx_or_rx + band) in sheet_setup:
+        sheet_setup[tx_or_rx + band] = get_template_set(tx_or_rx, sheet,standard_anchor,band)
 
-def save_report():
-    pass
+    sheet_post.post(data_path,sheet,sheet_setup[tx_or_rx + band], channel_anchor)
+
+def save_report(wb,report_path,date,name):
+    path = os.path.join(report_path,date)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    wb.save(os.path.join(path,name))
+
+def open_workbook(path):
+    subprocess.Popen(path,shell=True).pid
+    Workbook.set_mock_caller(path)
+
+def find_band(data_name):
+    data_name = data_name.lower()
+    if "2g" in data_name:
+        return "2G"
+    elif "5g" in data_name:
+        return "5G"
+    return None
+
+def find_tx_rx(data_name):
+    data_name = data_name.lower()
+    if "tx" in data_name:
+        return "TX"
+    elif "rx" in data_name:
+        return "RX"
+    return None
+
+def get_template_set(tx_or_rx, sheet,standard_anchor,band):
+    if tx_or_rx == "TX":
+        fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,5,6)
+    else:
+        fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,6,7)
+    return (fill_pos, all_anchor_row)
 
 if __name__ == '__main__':
     rootdir = os.path.dirname(__file__)
@@ -85,69 +112,43 @@ if __name__ == '__main__':
     t = time.time()
     date = datetime.datetime.fromtimestamp(t).strftime(r"%Y%m%d")
 
-##    if len(sys.argv) == 1:
-##        sys.exit(0)
+    if len(sys.argv) == 1:
+        sys.exit(0)
 
-##    template_path = sys.argv[1]
-##    subprocess.Popen([template_path],shell=True).pid
+    template_path = sys.argv[1]
+    open_workbook(template_path)
+    Workbook.set_mock_caller(template_path)
+    time.sleep(10) #wait excel to execute
+    wb = Workbook.caller()
+    wb_true = True
+
+##    template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 't1.xls'))
+##    open_workbook(template_path)
 ##    Workbook.set_mock_caller(template_path)
-##    time.sleep(6) #wait excel to execute
+##    time.sleep(6)
 ##    wb = Workbook.caller()
 
+    # Initial
+    sheet_arrange = get_sheet_arrange()
 
-##    subprocess.Popen([r"D:\game\abstract\draw_data_and_post\post\t 1.xls"],shell=True).pid
-    subprocess.Popen([os.path.join(os.path.dirname(__file__), 't1.xls')],shell=True).pid
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 't1.xls'))
-    Workbook.set_mock_caller(path)
-    time.sleep(6)
-    wb = Workbook.caller()
-##    wb.screen_updating = False
+    print "Start !"
 
     for folder in folder_file_names:
+        if not wb_true:
+            open_workbook(template_path)
+            Workbook.set_mock_caller(template_path)
+            time.sleep(10)
+            wb = Workbook.caller()
+            wb_true = True
         for data_name in folder_file_names[folder]:
             data_path = os.path.join(log_path,folder,data_name)
-##            print data_path
-            post(data_path)
-            save_report()
+            print data_path
+            post(data_path,data_name)
+        save_report(wb,report_path,date,folder)
+        Application(wb).quit()
+        wb_true = False
 
-
-
-    t = r"D:\game\abstract\WAC740"
-    TX_5G = [t + r"\IQFact_5G_Tx_SISO_HT40_result.csv",
-             t + r"\IQFact_5G_Tx_SISO_VHT40_result.csv",
-             t + r"\IQFact_5G_Tx_SISO_HT20_result.csv",
-             t + r"\IQFact_5G_Tx_SISO_VHT20_result.csv",
-             t + r"\IQFact_5G_Tx_SISO_VHT80_result.csv",
-             t + r"\IQFact_5G_Tx_SISO_11a_result.csv",]
-##             t + r"\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv",
-##             t + r"\WAC7X0-S1-5G-3X3-MIMO-n-Tx-New_Result.csv"]
-
-    TX_2G = [t + r"\IQFact_2G_Tx_SISO_11b_2484_result.csv",
-             t + r"\IQFact_2G_Tx_SISO_11b_result.csv",
-             t + r"\IQFact_2G_Tx_SISO_11g_result.csv",
-             t + r"\IQFact_2G_Tx_SISO_HT20_result.csv",
-             t + r"\IQFact_2G_Tx_SISO_HT40_result.csv",
-             t + r"\IQFact_2G_Tx_SISO_VHT20_result.csv",
-             t + r"\IQFact_2G_Tx_SISO_VHT40_result.csv"]
-
-    RX_2G = [t + r"\IQFact_2G_Rx_MIMO_result.csv",
-             t + r"\IQFact_2G_Rx_SIMO_result.csv",
-             t + r"\IQFact_2G_Rx_SISO_result.csv"]
-
-    RX_5G = [t + r"\IQFact_5G_Rx_MIMO_result.csv",
-             t + r"\IQFact_5G_Rx_SIMO_result.csv",
-             t + r"\IQFact_5G_Rx_SISO_result.csv"]
+    print "Finish !"
 ##
-##    for data_path in RX_2G:
-##        print data_path
-##        post(data_path)
-
-
-##    wb.screen_updating = True
-##    data_path = TX_5G[0]
-##    data_path = RX_5G[2]
-##    data_path = t + r"\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
-##    post(data_path)
 ##    a=raw_input()
-##    make_folder(os.path.join(relog_path,date),folder_file_names.keys())
-##
+
