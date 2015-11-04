@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
+# Name:        sheet_pos
+# Purpose:     Get data and post to workbook sheet
 #
-# Author:      Admin
+# Author:      Lai
 #
 # Created:     28/10/2015
 #-------------------------------------------------------------------------------
@@ -11,6 +11,7 @@ from xlwings import Workbook, Sheet, Range, Chart
 import template_search
 import data_manage
 
+# if data item name changed, it can modify the value reflection
 item_ref = {"standard":"standard",
             "rate":"rate",
             "channel":"channel",
@@ -18,6 +19,7 @@ item_ref = {"standard":"standard",
             "BW":"BW"
            }
 
+# key: item name in sheet, value: item name in data
 sheet_item_ref = {"Tx Power":"power",
                   "EVM":"EVM",
                   "Mask":"Mask",
@@ -76,6 +78,9 @@ post_func= {# TX
             }
 
 def post(data_path, sheet, sheet_setup, channel_anchor):
+    """
+    Get template setup to find post position then post value
+    """
     fill_pos, all_anchor_row = sheet_setup[0], sheet_setup[1]
 ##    print fill_pos.keys()
 ##    print all_anchor_row
@@ -90,16 +95,20 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
         if not check_same_row(data, last_data_conf):
 ##            print data
 ##            print fill_pos.keys()
+            # find "standard" position
             m = meet_standard(data, fill_pos)
 ##            print m
+            # find "rate" position
             if meet_rate(data, m):
                 need_pos, case_num = meet_rate(data, m)
                 last_data_conf = get_data_conf(data)
             else:
                 continue
             print need_pos, case_num
-            ch_start = template_search.get_channel_start(sheet,need_pos,channel_anchor,all_anchor_row)
+            # Get post start position
+            ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
         print ch_start, "ch start"
+        # Get value post position
         ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
         print ch_pos, "ch pos"
         if ch_pos:
@@ -109,6 +118,9 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
             continue
 
 def check_same_row(data, last_data_conf):
+    """
+    Check if the same sheet row. It will check that "standard", "rate", "band width", and "stream" are all meet
+    """
     if not last_data_conf:
         return False
 
@@ -121,9 +133,14 @@ def get_data_conf(data):
     return (data["standard"],data["rate"],data["BW"],data["stream"])
 
 def post_value(sheet,data,start,ch_pos,case_num):
+    """
+    Post value in sheet explicit position
+    """
     for i in range(case_num):
+        # Get item name
         case = Range(sheet,(start[0]+i,start[1]-1)).value
 ##        print case
+        # if valid item name
         if case in sheet_item_ref.keys():
             value = post_func[sheet_item_ref[case]](data)
 ##            print data
@@ -131,17 +148,19 @@ def post_value(sheet,data,start,ch_pos,case_num):
             antennas = data["antenna"].split(",")
 ##            print antennas, len(antennas)
             if value:
+                # value > 1 means multiple streams
                 if len(value) > 1:
                     for idx in range(int(data["stream"])):
 ##                    for idx in range(len(antennas)):
                         post_pos = (start[0]+i,ch_pos[1]+int(antennas[idx]))
                         Range(sheet,post_pos).value = value[idx]
                 else:
+                    # antennas = 1 and value = 1 will be 1 stream
                     if len(antennas) > 1:
 ###################### for RX 11ac MIMO and SIMO post #######################
                         if sheet_item_ref[case] in rx_item:
                             move = template_search.find_ch_sum(sheet,ch_pos)
-    ##                        print move
+##                            print move
                             post_pos = (start[0]+i,ch_pos[1]+move)
 #############################################################################
                         else:
@@ -152,6 +171,9 @@ def post_value(sheet,data,start,ch_pos,case_num):
                     Range(sheet,post_pos).value = value[0]
 
 def meet_standard(data,fill_pos):
+    """
+    Get "standard" in sheet position
+    """
 ############ RX 11n need this to let "stream" to meet really config ###################
 ############ MIMO will always get stream '1'
     if data[item_ref["standard"]] == "11n":
@@ -169,15 +191,20 @@ def meet_standard(data,fill_pos):
     else:
         k = (data[item_ref["standard"]], data[item_ref["BW"]], data[item_ref["stream"]])
 
+    #
     if k in fill_pos:
         return fill_pos[k]
 
+    # MCSx
     if k[0] in fill_pos:
         return fill_pos[k[0]]
     print "Can't find this channel " + data[item_ref["channel"]]
     return None
 
 def meet_rate(data,fill_pos):
+    """
+    Get "rate" in sheet position
+    """
 ##    print fill_pos.keys()
     for k in fill_pos.keys():
         if "-" in data[item_ref["rate"]]:

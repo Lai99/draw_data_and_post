@@ -1,8 +1,8 @@
 #-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
+# Name:        template_search
+# Purpose:     Search sheet and give the template setup
 #
-# Author:      Admin
+# Author:      Lai
 #
 # Created:     26/10/2015
 #-------------------------------------------------------------------------------
@@ -42,6 +42,9 @@ def search_value(value, start, end):
     return None
 
 def manage_standard_5G(sheet,pos):
+    """
+    Draw "5G standard" express from template
+    """
     s = Range(sheet,pos).value
     if "\n" in s:
         standard_rate, stream = s.split("\n")
@@ -62,6 +65,9 @@ def manage_standard_5G(sheet,pos):
         return s
 
 def manage_standard_2G(sheet,pos):
+    """
+    Draw "2.4G standard" express from template
+    """
     s = Range(sheet,pos).value
     if "\n" in s:
         standard_rate, stream = s.split("\n")
@@ -86,6 +92,9 @@ def manage_standard_2G(sheet,pos):
         return s
 
 def manage_modulation(sheet,pos):
+    """
+    Draw "modulation" express from template
+    """
 ##************************************************
 ## for match 2.4G 11b "DSSS-CCK". data will get "CCK" instead of "DSSS"
     if "CCK" in Range(sheet,pos).value:
@@ -99,6 +108,9 @@ def mange_rate(sheet,pos):
     pass
 
 def make_module_item_key(sheet, pos, offset):
+    """
+    Add modulation and rate to a string
+    """
     if Range(sheet,(pos[0],offset)).value:
         rate = str(Range(sheet,(pos[0],offset)).value)
         rate = rate.replace(".","_")
@@ -173,7 +185,10 @@ def get_fill_pos(sheet,anchor,band,standard_x = 1,module_x = 2,rate_x = 3, case_
 ##        print module_items.values()
     return items, all_anchor_row
 
-def get_channel_start(sheet, pos, anchor, all_anchor_row = None):
+def get_channel_start(sheet, pos, all_anchor_row = None):
+    """
+    Search row in all_anchor_row that closest to pos. The row have the channel information
+    """
     row, col = pos[0], pos[1]
     if all_anchor_row:
         if row - all_anchor_row[0] > 0:
@@ -188,8 +203,12 @@ def get_channel_start(sheet, pos, anchor, all_anchor_row = None):
     return None
 
 def get_channel_pos(sheet, pos, ch):
+    """
+    Search column to find the channel title position
+    """
     row, col = pos[0], pos[1]
     count = 31
+    # beacause it might have blank, need to pass
     while count > 0:
         while Range(sheet,(row,col)).value:
             if ch in Range(sheet,(row,col)).value:
@@ -202,11 +221,33 @@ def get_channel_pos(sheet, pos, ch):
     return None
 
 def find_ch_sum(sheet,ch_pos):
+    """
+    Search column to find the last block value meet value in ch_pos
+    """
     count = 0
     match = (Range(sheet, ch_pos).value).replace(" ","")
     while Range(sheet, (ch_pos[0],ch_pos[1]+count)).value and (Range(sheet, (ch_pos[0],ch_pos[1]+count)).value).replace(" ","") == match:
         count += 1
     return count - 1
+
+def get_sheet_arrange():
+    """
+    To find sheet name "TX or RX" and "2.4G or 5G" and make a dict (name:sheet_pos)
+    """
+    sheet_names = [i.name.lower() for i in Sheet.all()]
+    sheet_ref = {}
+    for idx in range(len(sheet_names)):
+        if "2.4ghz" in sheet_names[idx]:
+            if "tx" in sheet_names[idx]:
+                sheet_ref["TX2G"] = idx + 1
+            elif "sensitivity" in sheet_names[idx]:
+                sheet_ref["RX2G"] = idx + 1
+        elif "5ghz" in sheet_names[idx]:
+            if "tx" in sheet_names[idx]:
+                sheet_ref["TX5G"] = idx + 1
+            elif "sensitivity" in sheet_names[idx]:
+                sheet_ref["RX5G"] = idx + 1
+    return sheet_ref
 
 if __name__ == '__main__':
     pass

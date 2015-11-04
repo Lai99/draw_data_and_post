@@ -1,65 +1,80 @@
 #-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
+# Name:        data_manage
+# Purpose:     Load format ".csv" data which have explicit arrangement
 #
-# Author:      Admin
+# Author:      Lai
 #
 # Created:     27/10/2015
 #-------------------------------------------------------------------------------
 import csv
 
 def get_standard(line):
+    """
+    "standard" explicit position is in list position "1"
+    """
     if len(line) > 1:
         return line[1].split(".")[1]
     return None
 
 def get_channel(line):
+    """
+    "channel" explicit position is in list position "2"
+    """
     if len(line) > 2:
         return line[2]
     return None
 
 def get_rate(line):
+    """
+    "rate" explicit position is in list position "3"
+    """
     if len(line) > 3:
         return line[3]
     return None
 
 def get_bw(line):
+    """
+    "band width" explicit position is in list position "4"
+    """
     if len(line) > 4:
         return line[4].split("-")[1]
     return None
 
 def get_stream(line):
-######### 11n RX stream data will always get '1', need to meet really config 1/2/3/4
-##    if get_standard(line):
-##        if get_standard(line) == "11n":
-##            if get_antenna(line):
-##                t = get_antenna(line).split(",")
-##                return str(len(t))
-##        if len(line) > 5:
-##            return line[5]
-###################################################################################
-##    else:
+    """
+    "stream" explicit position is in list position "5"
+    """
     if len(line) > 5:
         return line[5]
     return None
 
 def get_antenna(line):
+    """
+    "antenna" explicit position is in list position "6"
+    """
     if len(line) > 6:
         return line[6]
     return None
 
 def get_power(line):
+    """
+    "tx power" explicit title position is in list position "7" and value position is in list position "8"
+    """
     if len(line) > 8:
         if line[7] == "Power":
             return line[8]
     return None
 
 def get_sens(line):
+    """
+    "rx power" explicit title position is in list position "7" and value position is in list position "8"
+    """
     if len(line) > 8:
         if line[7] == "SENS":
             return line[8]
     return None
 
+# item name corresponds to the value management function
 get_func = {"standard":get_standard,
             "channel":get_channel,
             "rate":get_rate,
@@ -69,11 +84,15 @@ get_func = {"standard":get_standard,
             "power":get_power,
             "sens":get_sens
            }
+
 def load_data(path):
+    """
+    Load .csv
+    """
     data = {}
-    with open(path, 'rb') as f:
+    with open(path, 'rb') as f:  # from python doc. it should open with para. "b"
         reader = csv.reader(f)
-        reader.next()
+        reader.next()   # first line is data front that don't need
         for line in reader:
             line = [i for i in line if i!='']
             if line:
@@ -99,7 +118,7 @@ def load_data(path):
                     if get_func["sens"](line):
                         data["sens"] = get_func["sens"](line)
 
-                else:
+                else: # line with item and value
                     if len(line) > 1:
                         data[line[0]] = line[1]
                     else:
@@ -109,9 +128,4 @@ def load_data(path):
                 data = {}
 
 if __name__ == '__main__':
-##    pass
-    t = r"D:\python task\WAC740"
-    path = (t + r"\IQFact_2G_Rx_MIMO_result.csv")
-##    path = r"D:\game\abstract\draw_data_and_post\post\Log\5G_MIMO_New_S1-Tx\WAC7X0-S1-5G-2X2-MIMO-n-Tx-New_Result.csv"
-    for i in load_data(path):
-        print i
+    pass
