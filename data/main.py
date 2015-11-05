@@ -71,12 +71,14 @@ if __name__ == '__main__':
 
             # Close file
 
-
-    t = r"D:\python task\draw_data_and_post\data\Log"
-    path = t + r"\2G_Tx_MIMO\MFGC_2G_Tx_MIMO4_HT40_combine_output.xlsx"
+    t = r"D:\game\abstract\draw_data_and_post\data\Log"
+##    t = r"D:\python task\draw_data_and_post\data\Log"
+##    path = t + r"\2G_Tx_MIMO\MFGC_2G_Tx_MIMO4_HT40_combine_output.xlsx"
+    path = t + r"\2G_Tx_MIMO\t.xlsx"
 
     wb = xlrd.open_workbook(path)
     draw_data(wb,path,"MFGC_2G_Tx_MIMO4_HT40_combine_output")
+
 
 
 

@@ -21,7 +21,8 @@ _item_name_ref = {"standard":"Standard",
                  "mask":"Mask",
                  "F_ER":"Frequency Error_ppm",
                  "flatness_inner":"spectralFlatness_InnerSubcarriers",
-                 "flatness_outer":"spectralFlatness_OuterSubcarriers"
+                 "flatness_outer":"spectralFlatness_OuterSubcarriers",
+                 "result":"Test Result"
                 }
 
 _get_func = {"standard":_get_standard,
@@ -64,31 +65,44 @@ def _get_items_pos(items_list):
     if _item_name_ref["flatness_outer"] in items_list:
         items_pos["flatness_outer"] = items_list.index(_item_name_ref["flatness_outer"])
 
+    # get "Test result" column pos
+    if _item_name_ref["result"] in items_list:
+        items_pos["result"] = items_list.index(_item_name_ref["result"])
+
     return items_pos
 
 def draw_data(workbook, anchor, group_num):
     table = workbook.sheets()[0]
     items_pos = {}
-    r = 0
-    while table.row_values(r)[0]:
-        if table.row_values(r)[0] == anchor:
-##            print r, table.row_values(r)
-            items_pos = _get_items_pos(table.row_values(r))
-            print items_pos
-            break
-        r+=1
+
+    # Get all item column pos
+    for row in range(table.nrows):
+        if table.row_values(row)[0] == anchor:
+            # Need item column pos first
+            if not items_pos:
+                items_pos = _get_items_pos(table.row_values(row))
+##                print items_pos
+            # Sea
+            i = 1; space = row + i*int(group_num);pass_flag = True
+            while pass_flag and table.nrows >= space and table.row_values(space)[items_pos["result"]]:
+                for j in range(int(group_num)):
+                    # from bottom to top to avoid over list
+                    if table.row_values(space-j)[items_pos["result"]] == "Fail":
+                        pass_flag = False
+##                        print space
+                        break
+                i += 1
+                space = row + i*int(group_num)
+            # i now is fail pos, last one is needed
+            if i-1 == 1:
+                pass
+            else:
+                if pass_flag:
+                    print row + (i-1)*int(group_num), row
+                else:
+                    print row + (i-2)*int(group_num), row
 
 if __name__ == '__main__':
-##    pass
-    t = r"D:\python task\draw_data_and_post\data\Log"
-    path = t + r"\2G_Tx_MIMO\MFGC_2G_Tx_MIMO4_HT40_combine_output.xlsx"
+    pass
 
-    wb = xlrd.open_workbook(path)
-    t = wb.sheets()[0]
-    print t.nrows
-    print t.ncols
-
-    for row in range(t.nrows):
-        if "Standard" in t.row_values(row):
-            print row
 
