@@ -32,39 +32,53 @@ sheet_item_ref = {"Tx Power":"power",
 rx_item = ["SENS"]
 
 def post_power(data):
-    if data["power"]:
-        return data["power"].split(",")
-    return data["power"]
+    if "power" in data:
+        if data["power"]:
+            return data["power"].split(",")
+        return data["power"]
+    return None
 
 def post_evm(data):
-    if data["EVM"]:
-        return data["EVM"].split(",")
-    return data["EVM"]
+    if "EVM" in data:
+        if data["EVM"]:
+            return data["EVM"].split(",")
+        return data["EVM"]
+    return None
 
 def post_mask(data):
-    if data["Mask"]:
-        return data["Mask"].split(",")
-    return data["Mask"]
+    if "Mask" in data:
+        if data["Mask"]:
+            return data["Mask"].split(",")
+        return data["Mask"]
+    return None
 
 def post_freq_err(data):
-    if data["F_ER"]:
-        return list([data["F_ER"]])
-    return data["F_ER"]
+    if "F_ER" in data:
+        if data["F_ER"]:
+            return list([data["F_ER"]])
+        return data["F_ER"]
+    return None
 
 def post_cr_err(data):
-    if data["CR_ER"]:
-        return list([data["CR_ER"]])
-    return data["CR_ER"]
+    if "CR_ER" in data:
+        if data["CR_ER"]:
+            return list([data["CR_ER"]])
+        return data["CR_ER"]
+    return None
 
 def post_flatness(data):
-    if data["Flatness"]:
-        return data["Flatness"].split(":")
-    return data["Flatness"]
+    if "Flatness" in data:
+        if data["Flatness"]:
+            return data["Flatness"].split(":")
+        return data["Flatness"]
+    return None
 
 def post_sens(data):
-    if data["sens"]:
-        return data["sens"].split(",")
-    return data["sens"]
+    if "sens" in data:
+        if data["sens"]:
+            return data["sens"].split(",")
+        return data["sens"]
+    return None
 
 post_func= {# TX
             "power":post_power,
@@ -141,7 +155,7 @@ def post_value(sheet,data,start,ch_pos,case_num):
         case = Range(sheet,(start[0]+i,start[1]-1)).value
 ##        print case
         # if valid item name
-        if case in sheet_item_ref.keys():
+        if case in sheet_item_ref:
             value = post_func[sheet_item_ref[case]](data)
 ##            print data
 ##            print value
