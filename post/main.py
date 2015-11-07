@@ -134,7 +134,7 @@ if __name__ == '__main__':
 ##    wb = Workbook.caller()
     wb = Workbook.active()
     wb_true = True
-    Application(wb).screen_updating = False
+##    Application(wb).screen_updating = False
 ##    template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 't1.xls'))
 ##    open_workbook(template_path)
 ##    Workbook.set_mock_caller(template_path)
@@ -153,14 +153,14 @@ if __name__ == '__main__':
             time.sleep(10)
 ##            wb = Workbook.caller()
             wb = Workbook.active()
-            Application(wb).screen_updating = False
+##            Application(wb).screen_updating = False
             wb_true = True
         for data_name in folder_file_names[folder]:
             data_path = os.path.join(log_path,folder,data_name)
             print data_path
             post(data_path,data_name)
         save_report(wb,report_path,date,folder)
-        Application(wb).screen_updating = True
+##        Application(wb).screen_updating = True
         Application(wb).quit()
         wb_true = False
 

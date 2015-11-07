@@ -29,11 +29,20 @@ def _get_standard(table, data, start_pos, _, items_pos):
         if "n" in s:
             data["standard"] = "802.11n"
         elif "ac" in s:
-            data["standard"] = "802.11n"
+            data["standard"] = "802.11ac"
 
 def _get_channel(table, data, start_pos, _, items_pos):
     if "channel" in items_pos:
-        data["channel"] = table.row_values(start_pos)[items_pos["channel"]]
+##############################################################################
+############## HT40/80 channel need to add "2" for real
+        if "standard" in items_pos:
+            s = table.row_values(start_pos)[items_pos["standard"]]
+
+        if not "20" in s:
+            data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 2)
+##############################################################################
+        else:
+            data["channel"] = table.row_values(start_pos)[items_pos["channel"]]
 
 def _get_band_width(table, data, start_pos, _, items_pos):
     if "BW" in items_pos:
@@ -41,7 +50,11 @@ def _get_band_width(table, data, start_pos, _, items_pos):
 
 def _get_rate(table, data, start_pos, _, items_pos):
     if "rate" in items_pos:
-        data["rate"] = table.row_values(start_pos)[items_pos["rate"]].upper()
+        if "n" in table.row_values(start_pos)[items_pos["rate"]].lower():
+            rate = table.row_values(start_pos)[items_pos["rate"]].lower()
+            data["rate"] = rate.split("n")[0].upper()
+        else:
+            data["rate"] = table.row_values(start_pos)[items_pos["rate"]].upper()
 
 def _get_antenna(table, data, start_pos, _, items_pos):
     ant = {1:"0",2:"0,1",3:"0,1,2",4:"0,1,2,3"}
@@ -135,7 +148,7 @@ def draw_data(workbook, anchor, group_num):
 ##                print items_pos
             # Find no item stop search value
             if not table.row_values(row+1)[0]:
-                break
+                continue
             #
             i = 1; space = row + i*group_num;pass_flag = True
             while pass_flag and table.nrows >= space and table.row_values(space)[items_pos["result"]]:
@@ -149,7 +162,7 @@ def draw_data(workbook, anchor, group_num):
                 space = row + i*group_num
             # i now is fail pos, last one is needed
             if i-1 == 1:
-                pass
+                continue
             else:
                 if pass_flag:
                     start_pos = row + (i-2)*group_num + 1
@@ -157,8 +170,8 @@ def draw_data(workbook, anchor, group_num):
                 else:
                     start_pos = row + (i-3)*group_num + 1
                     data = get_items_value(table,start_pos,group_num,items_pos)
-            yield data
-            data = {}
+                yield data
+                data = {}
 
 if __name__ == '__main__':
     pass

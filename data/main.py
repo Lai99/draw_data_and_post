@@ -112,14 +112,3 @@ if __name__ == '__main__':
             # Call draw data func. and save arranged one
             draw_data(wb,folder_path,data_name.split(".")[0])
 
-##    t = r"D:\game\abstract\draw_data_and_post\data\Log"
-##    t = r"D:\python task\draw_data_and_post\data\Log"
-####    p = t + r"\2G_Tx_MIMO\MFGC_2G_Tx_MIMO4_HT40_combine_output.xlsx"
-##    p = t + r"\2G_Tx_MIMO\t.xlsx"
-##
-##    wb = xlrd.open_workbook(p)
-##    draw_data(wb,path,"MFGC_2G_Tx_MIMO4_HT40_combine_output")
-
-
-
-
