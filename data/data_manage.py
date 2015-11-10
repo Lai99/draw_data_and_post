@@ -34,12 +34,20 @@ def _get_standard(table, data, start_pos, _, items_pos):
 def _get_channel(table, data, start_pos, _, items_pos):
     if "channel" in items_pos:
 ##############################################################################
-############## HT40/80 channel need to add "2" for real
+############## HT40 channel need to add "2" for real, HT80 channel need to add 2 or 6
         if "standard" in items_pos:
             s = table.row_values(start_pos)[items_pos["standard"]]
 
-        if not "20" in s:
+        if "40" in s:
             data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 2)
+
+        elif "80" in s:
+            if "120" in table.row_values(start_pos)[items_pos["channel"]]:
+                data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 2)
+            elif "157" in table.row_values(start_pos)[items_pos["channel"]]:
+                data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) - 2)
+            else:
+                data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 6)
 ##############################################################################
         else:
             data["channel"] = table.row_values(start_pos)[items_pos["channel"]]
@@ -172,8 +180,4 @@ def draw_data(workbook, anchor, group_num):
                     data = get_items_value(table,start_pos,group_num,items_pos)
                 yield data
                 data = {}
-
-if __name__ == '__main__':
-    pass
-
 

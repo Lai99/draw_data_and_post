@@ -234,6 +234,3 @@ def meet_rate(data,fill_pos):
                     return fill_pos[k]
     print "Can't find this modulation " + data[item_ref["rate"]]
     return None
-
-if __name__ == '__main__':
-    pass

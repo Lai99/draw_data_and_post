@@ -127,9 +127,3 @@ def load_data(path):
                 yield data
                 data = {}
 
-if __name__ == '__main__':
-    pass
-##    path = r"D:\python task\draw_data_and_post\data\Result\20151106\2G_Tx_MIMO\t.csv"
-##
-##    for data in load_data(path):
-##        print data

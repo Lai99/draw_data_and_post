@@ -248,6 +248,3 @@ def get_sheet_arrange():
             elif "sensitivity" in sheet_names[idx]:
                 sheet_ref["RX5G"] = idx + 1
     return sheet_ref
-
-if __name__ == '__main__':
-    pass

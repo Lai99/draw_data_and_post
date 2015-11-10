@@ -87,6 +87,7 @@ def make_folder(path):
 if __name__ == '__main__':
     # the program path
     rootdir = os.path.dirname(__file__)
+##rootdir = os.path.dirname(os.path.abspath(sys.argv[0]))
     # log folder path
     log_path = os.path.join(rootdir,"Log")
     # report folder path

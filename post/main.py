@@ -110,9 +110,11 @@ def get_template_set(tx_or_rx, sheet,standard_anchor,band):
         fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,6,7)
     return (fill_pos, all_anchor_row)
 
-if __name__ == '__main__':
+if False:
+##if __name__ == '__main__':
     # the program path
-    rootdir = os.path.dirname(__file__)
+##    rootdir = os.path.dirname(__file__)
+    rootdir = os.path.dirname(os.path.abspath(sys.argv[0]))
     # log folder path
     log_path = os.path.join(rootdir,"Log")
     # report folder path
@@ -129,42 +131,41 @@ if __name__ == '__main__':
 
     template_path = sys.argv[1]
     open_workbook(template_path)
-##    Workbook.set_mock_caller(template_path) # set workbook hook
+    ##    Workbook.set_mock_caller(template_path) # set workbook hook
     time.sleep(10) #wait excel to execute
-##    wb = Workbook.caller()
+    ##    wb = Workbook.caller()
     wb = Workbook.active()
     wb_true = True
-##    Application(wb).screen_updating = False
-##    template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 't1.xls'))
-##    open_workbook(template_path)
-##    Workbook.set_mock_caller(template_path)
-##    time.sleep(6)
-##    wb = Workbook.caller()
 
     # Get sheets pos
     sheet_arrange = template_search.get_sheet_arrange()
 
     print "Start !"
+    t1 = time.time()
 
     for folder in folder_file_names:
         if not wb_true:
             open_workbook(template_path)
-##            Workbook.set_mock_caller(template_path)
+    ##            Workbook.set_mock_caller(template_path)
             time.sleep(10)
-##            wb = Workbook.caller()
+    ##            wb = Workbook.caller()
             wb = Workbook.active()
-##            Application(wb).screen_updating = False
+    ##            Application(wb).screen_updating = False
             wb_true = True
         for data_name in folder_file_names[folder]:
             data_path = os.path.join(log_path,folder,data_name)
             print data_path
             post(data_path,data_name)
         save_report(wb,report_path,date,folder)
-##        Application(wb).screen_updating = True
+    ##        Application(wb).screen_updating = True
         Application(wb).quit()
         wb_true = False
 
     print "Finish !"
-##
-##    a=raw_input()
+    print time.time() - t1
+    a=raw_input()
+
+else:
+    rootdir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    print rootdir
 
