@@ -79,21 +79,21 @@ def _get_power(table, data, start_pos, group_num, items_pos):
     if "Power" in items_pos:
         powers = ""
         for i in range(group_num):
-            powers += table.row_values(start_pos)[items_pos["Power"]] + ","
+            powers += table.row_values(start_pos + i)[items_pos["Power"]] + ","
         data["Power"] = powers[:-1]
 
 def _get_EVM(table, data, start_pos, group_num, items_pos):
     if "EVM" in items_pos:
         evms = ""
         for i in range(group_num):
-            evms += table.row_values(start_pos)[items_pos["EVM"]] + ","
+            evms += table.row_values(start_pos + i)[items_pos["EVM"]] + ","
         data["EVM"] = evms[:-1]
 
 def _get_mask(table, data, start_pos, group_num, items_pos):
     if "Mask" in items_pos:
         evms = ""
         for i in range(group_num):
-            if table.row_values(start_pos)[items_pos["Mask"]] == "Pass":
+            if table.row_values(start_pos + i)[items_pos["Mask"]] == "Pass":
                 evms += "0.00,"
             else:
                 evms += "Fail,"

@@ -110,8 +110,7 @@ def get_template_set(tx_or_rx, sheet,standard_anchor,band):
         fill_pos, all_anchor_row = template_search.get_fill_pos(sheet,standard_anchor,band,1,2,3,6,7)
     return (fill_pos, all_anchor_row)
 
-if False:
-##if __name__ == '__main__':
+if __name__ == '__main__':
     # the program path
 ##    rootdir = os.path.dirname(__file__)
     rootdir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -164,8 +163,4 @@ if False:
     print "Finish !"
     print time.time() - t1
     a=raw_input()
-
-else:
-    rootdir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    print rootdir
 

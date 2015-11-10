@@ -10,6 +10,7 @@
 from xlwings import Workbook, Sheet, Range, Chart
 import template_search
 import data_manage
+import time
 
 # if data item name changed, it can modify the value reflection
 item_ref = {"standard":"standard",
@@ -103,9 +104,10 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
     case_num = 0
     ch_start = None
     ch_pos = None
+    Sheet(sheet).activate()
 
     for data in data_manage.load_data(data_path):
-        Sheet(sheet).activate()
+
         if not check_same_row(data, last_data_conf):
 ##            print data
 ##            print fill_pos.keys()
@@ -118,15 +120,27 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
                 last_data_conf = get_data_conf(data)
             else:
                 continue
-            print need_pos, case_num
+##            print need_pos, case_num
             # Get post start position
-            ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
-        print ch_start, "ch start"
+            try:
+                ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
+            except:
+                time.sleep(3)
+                ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
+##        print ch_start, "ch start"
         # Get value post position
-        ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
-        print ch_pos, "ch pos"
+        try:
+            ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
+        except:
+            time.sleep(3)
+            ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
+##        print ch_pos, "ch pos"
         if ch_pos:
-            post_value(sheet,data,need_pos,ch_pos,case_num)
+            try:
+                post_value(sheet,data,need_pos,ch_pos,case_num)
+            except:
+                time.sleep(3)
+                post_value(sheet,data,need_pos,ch_pos,case_num)
             ch_start = ch_pos
         else:
             continue
