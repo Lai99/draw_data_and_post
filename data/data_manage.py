@@ -93,6 +93,7 @@ def _get_mask(table, data, start_pos, group_num, items_pos):
     if "Mask" in items_pos:
         evms = ""
         for i in range(group_num):
+##            print table.row_values(start_pos + i)[items_pos["Mask"]]
             if table.row_values(start_pos + i)[items_pos["Mask"]] == "Pass":
                 evms += "0.00,"
             else:
@@ -150,34 +151,35 @@ def draw_data(workbook, anchor, group_num):
     # Get all item column pos
     for row in range(table.nrows):
         if table.row_values(row)[0] == anchor:
-            # Need item column pos first
-            if not items_pos:
-                items_pos = _get_items_pos(table.row_values(row))
-##                print items_pos
             # Find no item stop search value
             if not table.row_values(row+1)[0]:
                 continue
             #
-            i = 1; space = row + i*group_num;pass_flag = True
-            while pass_flag and table.nrows >= space and table.row_values(space)[items_pos["result"]]:
+##            # Need item column pos first
+##            if not items_pos:
+##                items_pos = _get_items_pos(table.row_values(row))
+##                print items_pos
+            # Not ensure every item placments are the same, so need get every item pos
+            items_pos = _get_items_pos(table.row_values(row))
+
+            i = 1; space = row + i*group_num;pass_flag = True;pass_row = 0
+            while table.nrows >= space and table.row_values(space)[items_pos["result"]]:
+                check_pass = True
                 for j in range(group_num):
                     # from bottom to top to avoid over list
                     if table.row_values(space-j)[items_pos["result"]] == "Fail":
-                        pass_flag = False
-##                        print space
+                        check_pass = False
                         break
+                # Find all pass save the row pos
+                if check_pass:
+                    pass_row = space - group_num + 1
+
                 i += 1
                 space = row + i*group_num
-            # i now is fail pos, last one is needed
-            if i-1 == 1:
-                continue
-            else:
-                if pass_flag:
-                    start_pos = row + (i-2)*group_num + 1
-                    data = get_items_value(table,start_pos,group_num,items_pos)
-                else:
-                    start_pos = row + (i-3)*group_num + 1
-                    data = get_items_value(table,start_pos,group_num,items_pos)
+
+            if pass_row != 0:
+                data = get_items_value(table,pass_row,group_num,items_pos)
+
                 yield data
                 data = {}
 
