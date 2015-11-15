@@ -20,16 +20,25 @@ _item_name_ref = {"standard":"Standard",
                  "F_ER":"Frequency Error_ppm",
                  "flatness_inner":"spectralFlatness_InnerSubcarriers",
                  "flatness_outer":"spectralFlatness_OuterSubcarriers",
-                 "result":"Test Result"
+                 "tx_result":"Test Result",
+                 "SENS":"dut_rx_power",
+                 "rx_result":"result"
                 }
+
+_tx_seq = ["standard","channel","rate","BW","antenna","Power","EVM","Mask","F_ER","flatness_inner","flatness_outer","tx_result"]
+_rx_seq = ["standard","channel","rate","BW","antenna","rx_result","SENS"]
 
 def _get_standard(table, data, start_pos, _, items_pos):
     if "standard" in items_pos:
-        s = table.row_values(start_pos)[items_pos["standard"]]
+        s = table.row_values(start_pos)[items_pos["standard"]].lower()
         if "n" in s:
             data["standard"] = "802.11n"
         elif "ac" in s:
             data["standard"] = "802.11ac"
+        elif "11b" in s:
+            data["standard"] = "802.11b"
+        elif "11g" in s:
+            data["standard"] = "802.11g"
 
 def _get_channel(table, data, start_pos, _, items_pos):
     if "channel" in items_pos:
@@ -65,12 +74,13 @@ def _get_rate(table, data, start_pos, _, items_pos):
             data["rate"] = table.row_values(start_pos)[items_pos["rate"]].upper()
 
 def _get_antenna(table, data, start_pos, _, items_pos):
-    ant = {1:"0",2:"0,1",3:"0,1,2",4:"0,1,2,3"}
+    ant = {1:"0",2:"1",3:"0,1",4:"2",5:"0,2",6:"1,2",7:"0,1,2",
+           8:"3",9:"0,3",10:"1,3",11:"0,1,3",12:"2,3",13:"0,2,3",
+           14:"1,2,3",15:"0,1,2,3"}
 
     if "antenna" in items_pos:
         s = table.row_values(start_pos)[items_pos["antenna"]]
-        ant_num = int(math.ceil(math.log(int(s),2)))
-        data["antenna"] = ant[ant_num]
+        data["antenna"] = ant[int(s)]
 
 def _get_stream(table, data, start_pos, group_num, items_pos):
     data["stream"] = str(group_num)
@@ -109,41 +119,73 @@ def _get_flatness(table, data,start_pos, group_num, items_pos):
     flatness_dup = ""
 
     if "flatness_inner" in items_pos:
-        flatness += table.row_values(start_pos)[items_pos["flatness_inner"]] + ","
+        if table.row_values(start_pos)[items_pos["flatness_inner"]]:
+            flatness += table.row_values(start_pos)[items_pos["flatness_inner"]] + ","
     if "flatness_outer" in items_pos:
-        flatness += table.row_values(start_pos)[items_pos["flatness_outer"]]
+        if table.row_values(start_pos)[items_pos["flatness_outer"]]:
+            flatness += table.row_values(start_pos)[items_pos["flatness_outer"]]
+    if flatness:
+        for i in range(group_num):
+            flatness_dup += flatness + ":"
+        data["Flatness"] = flatness_dup[:-1]
 
-    for i in range(group_num):
-        flatness_dup += flatness + ":"
-    data["Flatness"] = flatness_dup[:-1]
+def _get_sens(table, data,start_pos, group_num, items_pos):
+    if "SENS" in items_pos:
+        data["SENS"] = table.row_values(start_pos)[items_pos["SENS"]]
 
-def _get_items_pos(items_list):
+_get_func = {"standard":_get_standard,
+             "channel":_get_channel,
+             "rate":_get_rate,
+             "BW":_get_band_width,
+             "antenna":_get_antenna,
+             "stream":_get_stream,
+             "Power":_get_power,
+             "EVM":_get_EVM,
+             "Mask":_get_mask,
+             "F_ER":_get_f_er,
+             "flatness":_get_flatness,
+             "SENS":_get_sens
+            }
+
+def _get_tx_items_pos(items_list):
     items_pos = {}
-    seq = ["standard","channel","rate","BW","antenna","Power","EVM","Mask","F_ER","flatness_inner","flatness_outer","result"]
 
-    for item in seq:
+    for item in _tx_seq:
         if _item_name_ref[item] in items_list:
             items_pos[item] = items_list.index(_item_name_ref[item])
 
     return items_pos
 
-def get_items_value(table, start_pos, group_num, items_pos):
+def _get_rx_items_pos(items_list):
+    items_pos = {}
+
+    for item in _rx_seq:
+        if _item_name_ref[item] in items_list:
+            items_pos[item] = items_list.index(_item_name_ref[item])
+
+    return items_pos
+
+def _get_tx_items_value(table, start_pos, group_num, items_pos):
     data = {}
-    _get_standard(table, data, start_pos, group_num, items_pos)
-    _get_channel(table, data, start_pos, group_num, items_pos)
-    _get_band_width(table, data, start_pos, group_num, items_pos)
-    _get_rate(table, data, start_pos, group_num, items_pos)
-    _get_antenna(table, data, start_pos, group_num, items_pos)
-    _get_stream(table, data, start_pos, group_num, items_pos)
-    _get_power(table, data, start_pos, group_num, items_pos)
-    _get_EVM(table, data, start_pos, group_num, items_pos)
-    _get_mask(table, data, start_pos, group_num, items_pos)
-    _get_f_er(table, data, start_pos, group_num, items_pos)
-    _get_flatness(table, data,start_pos, group_num, items_pos)
+
+    tx_items = ["standard","channel","rate","BW","antenna","stream","Power","EVM","Mask","F_ER","flatness"]
+
+    for item in tx_items:
+        _get_func[item](table, data, start_pos, group_num, items_pos)
 
     return data
 
-def draw_data(workbook, anchor, group_num):
+def _get_rx_items_value(table, start_pos, group_num, items_pos):
+    data = {}
+
+    rx_items = ["standard","channel","rate","BW","antenna","stream","SENS"]
+
+    for item in rx_items:
+        _get_func[item](table, data, start_pos, group_num, items_pos)
+
+    return data
+
+def tx_draw_data(workbook, anchor, group_num):
     table = workbook.sheets()[0]
     items_pos = {}
     data = {}
@@ -160,14 +202,14 @@ def draw_data(workbook, anchor, group_num):
 ##                items_pos = _get_items_pos(table.row_values(row))
 ##                print items_pos
             # Not ensure every item placments are the same, so need get every item pos
-            items_pos = _get_items_pos(table.row_values(row))
+            items_pos = _get_tx_items_pos(table.row_values(row))
 
             i = 1; space = row + i*group_num;pass_flag = True;pass_row = 0
-            while table.nrows >= space and table.row_values(space)[items_pos["result"]]:
+            while table.nrows > space and table.row_values(space)[items_pos["tx_result"]]:
                 check_pass = True
                 for j in range(group_num):
                     # from bottom to top to avoid over list
-                    if table.row_values(space-j)[items_pos["result"]] == "Fail":
+                    if table.row_values(space-j)[items_pos["tx_result"]] == "Fail":
                         check_pass = False
                         break
                 # Find all pass save the row pos
@@ -178,8 +220,43 @@ def draw_data(workbook, anchor, group_num):
                 space = row + i*group_num
 
             if pass_row != 0:
-                data = get_items_value(table,pass_row,group_num,items_pos)
+                data = _get_tx_items_value(table,pass_row,group_num,items_pos)
 
                 yield data
                 data = {}
 
+def rx_draw_data(workbook, anchor, group_num):
+    table = workbook.sheets()[0]
+    items_pos = {}
+    data = {}
+
+    # Get all item column pos
+    for row in range(table.nrows):
+        if table.row_values(row)[0] == anchor:
+            # Find no item stop search value
+            if not table.row_values(row+1)[0]:
+                continue
+
+            # Not ensure every item placments are the same, so need get every item pos
+            items_pos = _get_rx_items_pos(table.row_values(row))
+
+            i = 1; space = row + i*group_num;pass_flag = True;pass_row = 0
+            while table.nrows > space and table.row_values(space)[items_pos["rx_result"]]:
+                check_pass = True
+                for j in range(group_num):
+                    # from bottom to top to avoid over list
+                    if table.row_values(space-j)[items_pos["rx_result"]] == "Fail":
+                        check_pass = False
+                        break
+                # Find all pass save the row pos
+                if check_pass:
+                    pass_row = space - group_num + 1
+
+                i += 1
+                space = row + i*group_num
+
+            if pass_row != 0:
+                data = _get_rx_items_value(table,pass_row,group_num,items_pos)
+
+                yield data
+                data = {}

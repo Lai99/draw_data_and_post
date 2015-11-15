@@ -45,20 +45,38 @@ def _make_data_config(data):
     return config
 
 def _get_group_number(line):
-    if "MIMO" in line:
-        return line.split("MIMO")[1][0]
+    if "MIMO" in line.upper():
+        return line.upper().split("MIMO")[1][0]
+    elif "SISO" in line.upper():
+        return 1
     return None
+
+def _get_mode(data_name):
+    mode = None
+    if "tx" in data_name.lower():
+        mode = "tx"
+    elif "rx" in data_name.lower():
+        mode = "rx"
+
+    return mode
 
 def draw_data(workbook, save_path, data_name):
     anchor = "Standard"
     title = [" Number"," standard"," Freq"," Rate"," BW"," Stream"," Ant","  Item","  Vaule"]
     count = 1
     seq = ["EVM","Mask","F_ER","Flatness"]
-    # find data group number
-    if not _get_group_number(data_name):
+    # get "TX or RX"
+    mode = _get_mode(data_name)
+    if not mode:
         return 1
-    group_num = int(_get_group_number(data_name))
 
+    if mode == "tx":
+        # find data group number
+        if not _get_group_number(data_name):
+            return 1
+        group_num = int(_get_group_number(data_name))
+    elif mode == "rx":
+        group_num = 1
 
     # Open .csv for saving purpose
     file_path = os.path.join(save_path,data_name)
@@ -66,19 +84,31 @@ def draw_data(workbook, save_path, data_name):
         data_writer = csv.writer(csvfile)
         data_writer.writerow(title)
         # draw data by data pos
-        for data in data_manage.draw_data(workbook, anchor,group_num):
-            # Save draw data
-##            print data
-            config = _make_data_config(data)
-            line = list([count]) + config + _get_item(data,"Power")
-            data_writer.writerow(line)
+        if mode == "tx":
+            for data in data_manage.tx_draw_data(workbook, anchor,group_num):
+                # Save draw data
+    ##            print data
+                config = _make_data_config(data)
+                line = list([count]) + config + _get_item(data,"Power")
+                data_writer.writerow(line)
 
-            for item in seq:
-                if _get_item(data,item):
-                    line = [""] * (len(title)-2) + _get_item(data,item)
-                    data_writer.writerow(line)
-            data_writer.writerow("")
-            count += 1
+                for item in seq:
+                    if _get_item(data,item):
+                        line = [""] * (len(title)-2) + _get_item(data,item)
+                        data_writer.writerow(line)
+                data_writer.writerow("")
+                count += 1
+
+        elif mode == "rx":
+            for data in data_manage.rx_draw_data(workbook, anchor,group_num):
+                # Save draw data
+    ##            print data
+                config = _make_data_config(data)
+                line = list([count]) + config + _get_item(data,"SENS")
+                data_writer.writerow(line)
+
+                data_writer.writerow("")
+                count += 1
 
 def make_folder(path):
     if not os.path.exists(path):
