@@ -35,6 +35,8 @@ def _get_standard(table, data, start_pos, _, items_pos):
             data["standard"] = "802.11n"
         elif "ac" in s:
             data["standard"] = "802.11ac"
+        elif "11a" in s:
+            data["standard"] = "802.11a"
         elif "11b" in s:
             data["standard"] = "802.11b"
         elif "11g" in s:
