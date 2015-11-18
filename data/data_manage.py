@@ -36,11 +36,11 @@ def _get_standard(table, data, start_pos, _, items_pos):
         elif "ac" in s:
             data["standard"] = "802.11ac"
         elif "11a" in s:
-            data["standard"] = "802.11a"
+            data["standard"] = "802.11ag"
         elif "11b" in s:
             data["standard"] = "802.11b"
         elif "11g" in s:
-            data["standard"] = "802.11g"
+            data["standard"] = "802.11ag"
 
 def _get_channel(table, data, start_pos, _, items_pos):
     if "channel" in items_pos:
@@ -49,7 +49,7 @@ def _get_channel(table, data, start_pos, _, items_pos):
         if "standard" in items_pos:
             s = table.row_values(start_pos)[items_pos["standard"]]
 
-        if not "rx_result" in items_pos:
+        if int(table.row_values(start_pos)[items_pos["channel"]]) > 30:   #5G channel
             if "40" in s:
                 data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 2)
 
