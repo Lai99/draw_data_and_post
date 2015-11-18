@@ -130,7 +130,7 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
 ##        print ch_start, "ch start"
         # Get value post position
         try:
-            print data[item_ref["channel"]]
+##            print data[item_ref["channel"]]
             ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
         except:
             time.sleep(3)
@@ -235,22 +235,22 @@ def meet_rate(data,fill_pos):
     """
     Get "rate" in sheet position
     """
-##    print fill_pos.keys()
-##    print data[item_ref["rate"]]
+    print fill_pos.keys()
+    print data[item_ref["rate"]]
     for k in fill_pos.keys():
-##        if "-" in data[item_ref["rate"]]:
-##            # Use "in" not "==" becasue the data["rate"] will look like "OFDM-6" but key is "OFDM-6.0"
-##            if data[item_ref["rate"]] in k:
-##                return fill_pos[k]
-##        else:
-##            if "-" in k:
-####                if data[item_ref["rate"]] == k.split("-")[0]:
-##                if data[item_ref["rate"]] == k.split("-")[0]:
-##                    return fill_pos[k]
-##            else:
-##                if data[item_ref["rate"]] in k:
-##                    return fill_pos[k]
-        if data[item_ref["rate"]] in k:
-            return fill_pos[k]
+        if "-" in data[item_ref["rate"]]:
+            if data[item_ref["rate"]] == k:
+                return fill_pos[k]
+        else:
+            if "-" in k:
+                #  data[item_ref["rate"]] with modulation
+                if data[item_ref["rate"]] == k.split("-")[0]:
+                    return fill_pos[k]
+                # data[item_ref["rate"]] only have rate
+                elif data[item_ref["rate"]] == k.split("-")[1]:
+                    return fill_pos[k]
+            else:
+                if data[item_ref["rate"]] in k:
+                    return fill_pos[k]
     print "Can't find this modulation " + data[item_ref["rate"]]
     return None

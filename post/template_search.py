@@ -113,7 +113,11 @@ def make_module_item_key(sheet, pos, offset):
     """
     if Range(sheet,(pos[0],offset)).value:
         rate = str(Range(sheet,(pos[0],offset)).value)
-        rate = rate.replace(".","_")
+        # the rate from sheet will be float
+        if rate.split(".")[1] == '0':
+            rate = rate.split(".")[0]
+        else:
+            rate = rate.replace(".","_")
         return manage_modulation(sheet,pos) + "-" + rate
     else:
         return manage_modulation(sheet,pos)

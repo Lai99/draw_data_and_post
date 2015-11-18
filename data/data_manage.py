@@ -76,7 +76,7 @@ def _get_rate(table, data, start_pos, _, items_pos):
             rate = table.row_values(start_pos)[items_pos["rate"]].lower()
             data["rate"] = rate.split("n")[0].upper()
         else:
-            data["rate"] = table.row_values(start_pos)[items_pos["rate"]].upper()
+            data["rate"] = table.row_values(start_pos)[items_pos["rate"]].replace('.',"_").upper()
 
 def _get_antenna(table, data, start_pos, _, items_pos):
     ant = {1:"0",2:"1",3:"0,1",4:"2",5:"0,2",6:"1,2",7:"0,1,2",
