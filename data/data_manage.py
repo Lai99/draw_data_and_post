@@ -48,7 +48,7 @@ def _get_channel(table, data, start_pos, _, items_pos):
 ############## TX HT40 channel need to add "2" for real, TX HT80 channel need to add 2 or 6
         if "standard" in items_pos:
             s = table.row_values(start_pos)[items_pos["standard"]]
-
+##        print start_pos, table.row_values(start_pos)[items_pos["channel"]]
         if int(table.row_values(start_pos)[items_pos["channel"]]) > 30:   #5G channel
             if "40" in s:
                 data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 2)
@@ -239,26 +239,24 @@ def rx_draw_data(workbook, anchor, group_num):
     for row in range(table.nrows):
         if table.row_values(row)[0] == anchor:
             # Find no item stop search value
+##            print row
             if not table.row_values(row+1)[0]:
                 continue
 
             # Not ensure every item placments are the same, so need get every item pos
             items_pos = _get_rx_items_pos(table.row_values(row))
-
-            i = 1; space = row + i*group_num;pass_flag = True;pass_row = 0
+##            print items_pos
+            space = row + 1;pass_flag = True;pass_row = 0
             while table.nrows > space and table.row_values(space)[items_pos["rx_result"]]:
                 check_pass = True
-                for j in range(group_num):
-                    # from bottom to top to avoid over list
-                    if table.row_values(space-j)[items_pos["rx_result"]] == "Fail":
-                        check_pass = False
-                        break
-                # Find all pass save the row pos
-                if check_pass:
-                    pass_row = space - group_num + 1
 
-                i += 1
-                space = row + i*group_num
+                if table.row_values(space)[items_pos["rx_result"]] == "Fail":
+                    check_pass = False
+
+                if check_pass:
+                    pass_row = space
+
+                space += 1
 
             if pass_row != 0:
                 data = _get_rx_items_value(table,pass_row,group_num,items_pos)

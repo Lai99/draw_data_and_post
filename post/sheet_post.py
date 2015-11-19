@@ -112,11 +112,14 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
 ##            print data
 ##            print fill_pos.keys()
             # find "standard" position
-            m = meet_standard(data, fill_pos)
-##            print m
+            standard_pos = meet_standard(data, fill_pos)
+            if not standard_pos:
+                continue
+
             # find "rate" position
-            if meet_rate(data, m):
-                need_pos, case_num = meet_rate(data, m)
+            rate_pos = meet_rate(data, standard_pos)
+            if rate_pos:
+                need_pos, case_num = rate_pos
                 last_data_conf = get_data_conf(data)
             else:
                 continue
@@ -228,15 +231,15 @@ def meet_standard(data,fill_pos):
     # MCSx
     if k[0] in fill_pos:
         return fill_pos[k[0]]
-    print "Can't find this channel " + data[item_ref["channel"]]
+    print "Can't find this channel " + data[item_ref["channel"]] + "," + data[item_ref["standard"]]
     return None
 
 def meet_rate(data,fill_pos):
     """
     Get "rate" in sheet position
     """
-    print fill_pos.keys()
-    print data[item_ref["rate"]]
+##    print fill_pos.keys()
+##    print data[item_ref["rate"]]
     for k in fill_pos.keys():
         if "-" in data[item_ref["rate"]]:
             if data[item_ref["rate"]] == k:
@@ -250,7 +253,7 @@ def meet_rate(data,fill_pos):
                 elif data[item_ref["rate"]] == k.split("-")[1]:
                     return fill_pos[k]
             else:
-                if data[item_ref["rate"]] in k:
+                if data[item_ref["rate"]] == k:
                     return fill_pos[k]
-    print "Can't find this modulation " + data[item_ref["rate"]]
+    print "Can't find this modulation " + data[item_ref["rate"]] + "," + data[item_ref["standard"]]
     return None

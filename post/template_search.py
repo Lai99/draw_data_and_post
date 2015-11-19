@@ -221,7 +221,7 @@ def get_channel_pos(sheet, pos, ch):
             count = 31
         col += 1
         count -= 1
-    print "Can't find this channel in channel form"
+    print "Can't find this channel in channel form " + str(ch) + " , "+ str(pos)
     return None
 
 def find_ch_sum(sheet,ch_pos):

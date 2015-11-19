@@ -47,7 +47,7 @@ def _make_data_config(data):
 def _get_group_number(line):
     if "MIMO" in line.upper():
         return line.upper().split("MIMO")[1][0]
-    elif "SISO" in line.upper():
+    elif "SISO" in line.upper() or "SIMO" in line.upper():
         return 1
     return None
 
@@ -70,13 +70,10 @@ def draw_data(workbook, save_path, data_name):
     if not mode:
         return 1
 
-    if mode == "tx":
-        # find data group number
-        if not _get_group_number(data_name):
-            return 1
-        group_num = int(_get_group_number(data_name))
-    elif mode == "rx":
-        group_num = 1
+    # find data group number
+    group_num = int(_get_group_number(data_name))
+    if not group_num:
+        return 1
 
     # Open .csv for saving purpose
     file_path = os.path.join(save_path,data_name)
