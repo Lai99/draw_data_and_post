@@ -123,14 +123,14 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
                 last_data_conf = get_data_conf(data)
             else:
                 continue
-            print need_pos, case_num
+##            print need_pos, case_num
             # Get post start position
             try:
                 ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
             except:
                 time.sleep(3)
                 ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
-        print ch_start, "ch start"
+##        print ch_start, "ch start"
         # Get value post position
         try:
 ##            print data[item_ref["channel"]]
@@ -138,14 +138,14 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
         except:
             time.sleep(3)
             ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
-        print ch_pos, "ch pos"
+##        print ch_pos, "ch pos"
         if ch_pos:
             try:
                 post_value(sheet,data,need_pos,ch_pos,case_num)
             except:
                 time.sleep(3)
                 post_value(sheet,data,need_pos,ch_pos,case_num)
-            # if value appear in ch by ch will fail
+            # if value appear in ch by ch will lose
 ##            ch_start = ch_pos
         else:
             continue

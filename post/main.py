@@ -74,7 +74,7 @@ def open_workbook(path):
     """
     Open file
     """
-    subprocess.Popen(path,shell=True).pid
+    return subprocess.Popen(path,shell=True)
 
 def find_band(data_name):
     """
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     template_path = sys.argv[1]
-    open_workbook(template_path)
+    process_excel = open_workbook(template_path)
     ##    Workbook.set_mock_caller(template_path) # set workbook hook
     time.sleep(10) #wait excel to execute
     ##    wb = Workbook.caller()
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     for folder in folder_file_names:
         if not wb_true:
-            open_workbook(template_path)
+            process_excel = open_workbook(template_path)
     ##            Workbook.set_mock_caller(template_path)
             time.sleep(10)
     ##            wb = Workbook.caller()
@@ -159,6 +159,8 @@ if __name__ == '__main__':
     ##        Application(wb).screen_updating = True
         Application(wb).quit()
         wb_true = False
+        process_excel.terminate()
+        process_excel.kill()
 
     print "Finish !"
     print time.time() - t1

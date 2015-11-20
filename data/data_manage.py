@@ -9,6 +9,8 @@
 import xlrd
 import math
 
+import subprocess, time
+
 _item_name_ref = {"standard":"Standard",
                  "channel":"Channel",
                  "BW":"BW",
@@ -64,7 +66,10 @@ def _get_channel(table, data, start_pos, _, items_pos):
                 data["channel"] = table.row_values(start_pos)[items_pos["channel"]]
 ##############################################################################
         else:
-            data["channel"] = table.row_values(start_pos)[items_pos["channel"]]
+            if "40" in s:
+                data["channel"] = str(int(table.row_values(start_pos)[items_pos["channel"]]) + 2)
+            else:
+                data["channel"] = table.row_values(start_pos)[items_pos["channel"]]
 
 def _get_band_width(table, data, start_pos, _, items_pos):
     if "BW" in items_pos:
@@ -263,3 +268,14 @@ def rx_draw_data(workbook, anchor, group_num):
 
                 yield data
                 data = {}
+
+
+if __name__ == '__main__':
+##    path = r"D:\python task\draw_data_and_post\post\tmp.xls"
+    path = "notepad"
+    a = subprocess.Popen(path,shell=True)
+    time.sleep(3)
+##    a.terminate()
+    print a.pid
+    print a.poll()
+##    a.kill()
