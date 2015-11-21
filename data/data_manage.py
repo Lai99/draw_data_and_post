@@ -272,10 +272,10 @@ def rx_draw_data(workbook, anchor, group_num):
 
 if __name__ == '__main__':
 ##    path = r"D:\python task\draw_data_and_post\post\tmp.xls"
-    path = "notepad"
-    a = subprocess.Popen(path,shell=True)
+    path = r"D:\game\12.pdf"
+##    a = subprocess.Popen(path,shell=False)
+    a = subprocess.call(path)
     time.sleep(3)
 ##    a.terminate()
-    print a.pid
-    print a.poll()
+    print a
 ##    a.kill()

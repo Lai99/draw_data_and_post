@@ -104,6 +104,8 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
     case_num = 0
     ch_start = None
     ch_pos = None
+    ch_now = None
+    last_ch = 0
     Sheet(sheet).activate()
 
     for data in data_manage.load_data(data_path):
@@ -130,14 +132,23 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
             except:
                 time.sleep(3)
                 ch_start = template_search.get_channel_start(sheet,need_pos,all_anchor_row)
+            ch_now = ch_start
 ##        print ch_start, "ch start"
         # Get value post position
         try:
 ##            print data[item_ref["channel"]]
-            ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
+            if int(data[item_ref["channel"]]) > last_ch:
+                ch_pos = template_search.get_channel_pos(sheet,ch_now,data[item_ref["channel"]])
+            else:
+                ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
+            last_ch = int(data[item_ref["channel"]])
         except:
             time.sleep(3)
-            ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
+            if int(data[item_ref["channel"]]) > last_ch:
+                ch_pos = template_search.get_channel_pos(sheet,ch_now,data[item_ref["channel"]])
+            else:
+                ch_pos = template_search.get_channel_pos(sheet,ch_start,data[item_ref["channel"]])
+            last_ch = int(data[item_ref["channel"]])
 ##        print ch_pos, "ch pos"
         if ch_pos:
             try:
@@ -146,7 +157,7 @@ def post(data_path, sheet, sheet_setup, channel_anchor):
                 time.sleep(3)
                 post_value(sheet,data,need_pos,ch_pos,case_num)
             # if value appear in ch by ch will lose
-##            ch_start = ch_pos
+            ch_now = ch_pos
         else:
             continue
 

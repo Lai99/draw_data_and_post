@@ -74,7 +74,7 @@ def open_workbook(path):
     """
     Open file
     """
-    return subprocess.Popen(path,shell=True)
+    subprocess.Popen(path,shell=True)
 
 def find_band(data_name):
     """
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     template_path = sys.argv[1]
-    process_excel = open_workbook(template_path)
+    open_workbook(template_path)
     ##    Workbook.set_mock_caller(template_path) # set workbook hook
     time.sleep(10) #wait excel to execute
     ##    wb = Workbook.caller()
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     for folder in folder_file_names:
         if not wb_true:
-            process_excel = open_workbook(template_path)
+            open_workbook(template_path)
     ##            Workbook.set_mock_caller(template_path)
             time.sleep(10)
     ##            wb = Workbook.caller()
@@ -159,10 +159,10 @@ if __name__ == '__main__':
     ##        Application(wb).screen_updating = True
         Application(wb).quit()
         wb_true = False
-        process_excel.terminate()
-        process_excel.kill()
 
     print "Finish !"
     print time.time() - t1
+    # Not through quit by python itself will let excel file alive in process
+    print "Press any key to continue"
     a=raw_input()
-
+    sys.exit(0)
