@@ -129,7 +129,7 @@ standard_manage_func = {"2G":manage_standard_2G,
 def get_fill_pos(sheet,anchor,band,standard_x = 1,module_x = 2,rate_x = 3, case_x = 5, start_x = 6):
     """
     Get all value can be filled position in a sheet
-    Input: int:specified sheet, string:anchor which used to split data block, int:spec column position, int: modulation column position,
+    Input: int:specified sheet, string:anchor which used to split data block, int:band, int:spec column position, int: modulation column position,
            int:data rate column position, int:test items column position
     Output:dict:whole sheet value can be filled position, all anchors row loocation
     """

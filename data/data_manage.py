@@ -248,6 +248,7 @@ def rx_draw_data(workbook, anchor):
     table = workbook.sheets()[0]
     items_pos = {}
     data = {}
+    group_num = 1
 
     # Get all item column pos
     for row in range(table.nrows):
@@ -273,7 +274,7 @@ def rx_draw_data(workbook, anchor):
                 space += 1
 
             if pass_row != 0:
-                data = _get_rx_items_value(table,pass_row,None,items_pos)
+                data = _get_rx_items_value(table,pass_row,group_num,items_pos)
 
                 yield data
                 data = {}
