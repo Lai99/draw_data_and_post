@@ -7,9 +7,8 @@
 # Created:     04/11/2015
 #-------------------------------------------------------------------------------
 import xlrd
-import math
 
-import subprocess, time
+import subprocess, time, sys
 
 _item_name_ref = {"standard":"Standard",
                  "channel":"Channel",
@@ -143,6 +142,14 @@ def _get_sens(table, data,start_pos, group_num, items_pos):
     if "SENS" in items_pos:
         data["SENS"] = table.row_values(start_pos)[items_pos["SENS"]]
 
+def _get_group_number(num):
+    ant = {"1":1,"2":1,"3":2,"4":1,"5":2,"6":2,"7":3,
+           "8":1,"9":2,"10":2,"11":3,"12":2,"13":3,
+           "14":3,"15":4}
+
+    return ant[num]
+
+
 _get_func = {"standard":_get_standard,
              "channel":_get_channel,
              "rate":_get_rate,
@@ -195,7 +202,7 @@ def _get_rx_items_value(table, start_pos, group_num, items_pos):
 
     return data
 
-def tx_draw_data(workbook, anchor, group_num):
+def tx_draw_data(workbook, anchor):
     table = workbook.sheets()[0]
     items_pos = {}
     data = {}
@@ -213,6 +220,8 @@ def tx_draw_data(workbook, anchor, group_num):
 ##                print items_pos
             # Not ensure every item placments are the same, so need get every item pos
             items_pos = _get_tx_items_pos(table.row_values(row))
+            ant_pos = items_pos["antenna"]
+            group_num = _get_group_number(table.row_values(row+1)[ant_pos])
 
             i = 1; space = row + i*group_num;pass_flag = True;pass_row = 0
             while table.nrows > space and table.row_values(space)[items_pos["tx_result"]]:
@@ -235,7 +244,7 @@ def tx_draw_data(workbook, anchor, group_num):
                 yield data
                 data = {}
 
-def rx_draw_data(workbook, anchor, group_num):
+def rx_draw_data(workbook, anchor):
     table = workbook.sheets()[0]
     items_pos = {}
     data = {}
@@ -264,18 +273,12 @@ def rx_draw_data(workbook, anchor, group_num):
                 space += 1
 
             if pass_row != 0:
-                data = _get_rx_items_value(table,pass_row,group_num,items_pos)
+                data = _get_rx_items_value(table,pass_row,None,items_pos)
 
                 yield data
                 data = {}
 
 
 if __name__ == '__main__':
-##    path = r"D:\python task\draw_data_and_post\post\tmp.xls"
-    path = r"D:\game\12.pdf"
-##    a = subprocess.Popen(path,shell=False)
-    a = subprocess.call(path)
-    time.sleep(3)
-##    a.terminate()
-    print a
-##    a.kill()
+    a=raw_input()
+    sys.exit(0)

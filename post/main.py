@@ -163,6 +163,5 @@ if __name__ == '__main__':
     print "Finish !"
     print time.time() - t1
     # Not through quit by python itself will let excel file alive in process
-    print "Press any key to continue"
-    a=raw_input()
-    sys.exit(0)
+    os.system("pause")
+
