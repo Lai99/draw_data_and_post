@@ -202,7 +202,7 @@ def _get_rx_items_value(table, start_pos, group_num, items_pos):
 
     return data
 
-def tx_draw_data(workbook, anchor):
+def tx_draw_data(workbook, anchor, group_num):
     table = workbook.sheets()[0]
     items_pos = {}
     data = {}
@@ -220,8 +220,12 @@ def tx_draw_data(workbook, anchor):
 ##                print items_pos
             # Not ensure every item placments are the same, so need get every item pos
             items_pos = _get_tx_items_pos(table.row_values(row))
-            ant_pos = items_pos["antenna"]
-            group_num = _get_group_number(table.row_values(row+1)[ant_pos])
+            # MIMO need to set "stream"
+            if not group_num:
+                ant_pos = items_pos["antenna"]
+                group_num = _get_group_number(table.row_values(row+1)[ant_pos])
+            else:
+                group_num = int(group_num)
 
             i = 1; space = row + i*group_num;pass_flag = True;pass_row = 0
             while table.nrows > space and table.row_values(space)[items_pos["tx_result"]]:
@@ -244,11 +248,10 @@ def tx_draw_data(workbook, anchor):
                 yield data
                 data = {}
 
-def rx_draw_data(workbook, anchor):
+def rx_draw_data(workbook, anchor,group_num):
     table = workbook.sheets()[0]
     items_pos = {}
     data = {}
-    group_num = 1
 
     # Get all item column pos
     for row in range(table.nrows):
@@ -260,6 +263,12 @@ def rx_draw_data(workbook, anchor):
 
             # Not ensure every item placments are the same, so need get every item pos
             items_pos = _get_rx_items_pos(table.row_values(row))
+            # MIMO need to set "stream"
+            if not group_num:
+                ant_pos = items_pos["antenna"]
+                group_num = _get_group_number(table.row_values(row+1)[ant_pos])
+            else:
+                group_num = int(group_num)
 ##            print items_pos
             space = row + 1;pass_flag = True;pass_row = 0
             while table.nrows > space and table.row_values(space)[items_pos["rx_result"]]:

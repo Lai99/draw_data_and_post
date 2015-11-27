@@ -53,6 +53,11 @@ def _get_mode(data_name):
 
     return mode
 
+def _get_group_number(line):
+    if "SISO" in line.upper() or "SIMO" in line.upper():
+        return 1
+    return None
+
 def draw_data(workbook, save_path, data_name):
     anchor = "Standard"
     title = [" Number"," standard"," Freq"," Rate"," BW"," Stream"," Ant","  Item","  Vaule"]
@@ -63,6 +68,9 @@ def draw_data(workbook, save_path, data_name):
     if not mode:
         return 1
 
+    # find data group number
+    group_num = _get_group_number(data_name)
+
     # Open .csv for saving purpose
     file_path = os.path.join(save_path,data_name)
     with open(file_path+".csv", 'wb') as csvfile: # must use binary "b"
@@ -70,7 +78,7 @@ def draw_data(workbook, save_path, data_name):
         data_writer.writerow(title)
         # draw data by data pos
         if mode == "tx":
-            for data in data_manage.tx_draw_data(workbook, anchor):
+            for data in data_manage.tx_draw_data(workbook, anchor, group_num):
                 # Save draw data
     ##            print data
                 config = _make_data_config(data)
@@ -85,7 +93,7 @@ def draw_data(workbook, save_path, data_name):
                 count += 1
 
         elif mode == "rx":
-            for data in data_manage.rx_draw_data(workbook, anchor):
+            for data in data_manage.rx_draw_data(workbook, anchor, group_num):
                 # Save draw data
     ##            print data
                 config = _make_data_config(data)
