@@ -21,6 +21,7 @@ def get_folder_filenames(path):
     """
     result = {}
     for parent, dirnames, filenames in os.walk(path):
+##        print dirnames, filenames
         if not dirnames:
             result[os.path.split(parent)[-1]] = filenames
     return result
@@ -107,7 +108,7 @@ def make_folder(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-if __name__ == '__main__':
+def main():
     # the program path
     rootdir = os.path.dirname(__file__)
 ##rootdir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -130,9 +131,14 @@ if __name__ == '__main__':
         # Load all files by file path
         for data_name in folder_file_names[folder]:
             # Open raw file
+            if not (data_name.split(".")[-1] in "xls" or data_name.split(".")[-1] in "xlsx"):
+                print "Not support this file type " + data_name
+                continue
             data_path = os.path.join(log_path,folder,data_name)
             print data_path
             wb = xlrd.open_workbook(data_path)
             # Call draw data func. and save arranged one
             draw_data(wb,folder_path,data_name.split(".")[0])
 
+if __name__ == '__main__':
+    main()
