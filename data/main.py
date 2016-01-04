@@ -139,6 +139,7 @@ def main():
             wb = xlrd.open_workbook(data_path)
             # Call draw data func. and save arranged one
             draw_data(wb,folder_path,data_name.split(".")[0])
+    os.system("pause")
 
 if __name__ == '__main__':
     main()
