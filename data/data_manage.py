@@ -91,8 +91,14 @@ def _get_antenna(table, data, start_pos, _, items_pos):
         s = table.row_values(start_pos)[items_pos["antenna"]]
         data["antenna"] = ant[int(s)]
 
-def _get_stream(table, data, start_pos, group_num, items_pos):
+def _get_stream_tx(table, data, start_pos, group_num, items_pos):
     data["stream"] = str(group_num)
+
+def _get_stream_rx(table, data, start_pos, group_num, items_pos):
+    if data["standard"] == "802.11n":
+        data["stream"] = str(1)
+    else:
+        data["stream"] = str(group_num)
 
 def _get_power(table, data, start_pos, group_num, items_pos):
     if "Power" in items_pos:
@@ -155,7 +161,8 @@ _get_func = {"standard":_get_standard,
              "rate":_get_rate,
              "BW":_get_band_width,
              "antenna":_get_antenna,
-             "stream":_get_stream,
+             "stream_tx":_get_stream_tx,
+             "stream_rx":_get_stream_rx,
              "Power":_get_power,
              "EVM":_get_EVM,
              "Mask":_get_mask,
@@ -185,7 +192,7 @@ def _get_rx_items_pos(items_list):
 def _get_tx_items_value(table, start_pos, group_num, items_pos):
     data = {}
 
-    tx_items = ["standard","channel","rate","BW","antenna","stream","Power","EVM","Mask","F_ER","flatness"]
+    tx_items = ["standard","channel_tx","rate","BW","antenna","stream_tx","Power","EVM","Mask","F_ER","flatness"]
 
     for item in tx_items:
         _get_func[item](table, data, start_pos, group_num, items_pos)
@@ -195,7 +202,7 @@ def _get_tx_items_value(table, start_pos, group_num, items_pos):
 def _get_rx_items_value(table, start_pos, group_num, items_pos):
     data = {}
 
-    rx_items = ["standard","channel","rate","BW","antenna","stream","SENS"]
+    rx_items = ["standard","channel","rate","BW","antenna","stream_rx","SENS"]
 
     for item in rx_items:
         _get_func[item](table, data, start_pos, group_num, items_pos)
@@ -221,7 +228,7 @@ def tx_draw_data(workbook, anchor, group_num):
             # Not ensure every item placments are the same, so need get every item pos
             items_pos = _get_tx_items_pos(table.row_values(row))
             # MIMO need to set "stream"
-            if not group_num:
+            if group_num != 1:
                 ant_pos = items_pos["antenna"]
                 group_num = _get_group_number(table.row_values(row+1)[ant_pos])
             else:
@@ -264,7 +271,7 @@ def rx_draw_data(workbook, anchor,group_num):
             # Not ensure every item placments are the same, so need get every item pos
             items_pos = _get_rx_items_pos(table.row_values(row))
             # MIMO need to set "stream"
-            if not group_num:
+            if group_num != 1:
                 ant_pos = items_pos["antenna"]
                 group_num = _get_group_number(table.row_values(row+1)[ant_pos])
             else:
