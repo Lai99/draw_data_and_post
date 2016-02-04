@@ -192,7 +192,7 @@ def _get_rx_items_pos(items_list):
 def _get_tx_items_value(table, start_pos, group_num, items_pos):
     data = {}
 
-    tx_items = ["standard","channel_tx","rate","BW","antenna","stream_tx","Power","EVM","Mask","F_ER","flatness"]
+    tx_items = ["standard","channel","rate","BW","antenna","stream_tx","Power","EVM","Mask","F_ER","flatness"]
 
     for item in tx_items:
         _get_func[item](table, data, start_pos, group_num, items_pos)
