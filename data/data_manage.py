@@ -46,7 +46,7 @@ def _get_standard(table, data, start_pos, _, items_pos):
 def _get_channel(table, data, start_pos, _, items_pos):
     if "channel" in items_pos:
 ##############################################################################
-############## TX HT40 channel need to add "2" for real, TX HT80 channel need to add 2 or 6
+############## TX HT40 channel need to add "2" for real status, TX HT80 channel need to add 2 or 6
         if "standard" in items_pos:
             s = table.row_values(start_pos)[items_pos["standard"]]
 ##        print start_pos, table.row_values(start_pos)[items_pos["channel"]]
@@ -215,7 +215,7 @@ def tx_draw_data(workbook, anchor, group_num):
     data = {}
 
     # Get all item column pos
-    for row in range(table.nrows):
+    for row in range(table.nrows-1): # Need at least one row to get data. Search anchor until table.nrows-1 (can avoid over table)
         if table.row_values(row)[0] == anchor:
             # Find no item stop search value
             if not table.row_values(row+1)[0]:
