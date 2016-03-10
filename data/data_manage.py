@@ -261,7 +261,7 @@ def rx_draw_data(workbook, anchor,group_num):
     data = {}
 
     # Get all item column pos
-    for row in range(table.nrows):
+    for row in range(table.nrows-1): # Need at least one row to get data. Search anchor until table.nrows-1 (can avoid over table)
         if table.row_values(row)[0] == anchor:
             # Find no item stop search value
 ##            print row
