@@ -63,10 +63,11 @@ def draw_data(workbook, save_path, data_name):
     anchor = "Standard"
     title = [" Number"," standard"," Freq"," Rate"," BW"," Stream"," Ant","  Item","  Vaule"]
     count = 1
-    seq = ["EVM","Mask","F_ER","Flatness"]
+    seq = ["Measured_Power","EVM","Mask","F_ER","Phase_Noise","Lo_Leakage","Flatness"]
     # get "TX or RX"
     mode = _get_mode(data_name)
     if not mode:
+        print "!!!Alert: File name needs to describe \"TX or RX\". This file won't be executed"
         return 1
 
     # find data group number
@@ -83,7 +84,7 @@ def draw_data(workbook, save_path, data_name):
                 # Save draw data
     ##            print data
                 config = _make_data_config(data)
-                line = list([count]) + config + _get_item(data,"Power")
+                line = list([count]) + config + _get_item(data,"Target_Power")
                 data_writer.writerow(line)
 
                 for item in seq:
@@ -129,16 +130,20 @@ def main():
         folder_path = os.path.join(result_path, date, folder)
         make_folder(folder_path)
         # Load all files by file path
-        for data_name in folder_file_names[folder]:
-            # Open raw file
-            if not (data_name.split(".")[-1] in "xls" or data_name.split(".")[-1] in "xlsx"):
-                print "Not support this file type " + data_name
-                continue
-            data_path = os.path.join(log_path,folder,data_name)
-            print data_path
-            wb = xlrd.open_workbook(data_path)
-            # Call draw data func. and save arranged one
-            draw_data(wb,folder_path,data_name.split(".")[0])
+        try:
+            for data_name in folder_file_names[folder]:
+                # Open raw file
+                if not (data_name.split(".")[-1] in "xls" or data_name.split(".")[-1] in "xlsx"):
+                    print "!!!ALert: Not support this file type " + data_name
+                    continue
+                data_path = os.path.join(log_path,folder,data_name)
+                print data_path
+                wb = xlrd.open_workbook(data_path)
+                # Call draw data func. and save arranged one
+                draw_data(wb,folder_path,data_name.split(".")[0])
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+
     os.system("pause")
 
 if __name__ == '__main__':

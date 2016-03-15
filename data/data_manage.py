@@ -15,10 +15,13 @@ _item_name_ref = {"standard":"Standard",
                  "BW":"BW",
                  "rate":"rate",
                  "antenna":"ant",
-                 "Power":"Measured Power",
+                 "Target_Power":"Target Power",
+                 "Measured_Power":"Measured Power",
                  "EVM":"EVM",
                  "Mask":"Mask",
                  "F_ER":"Frequency Error_ppm",
+                 "Phase_Noise":"Phase Noise",
+                 "Lo_Leakage":"Lo Leakage",
                  "flatness_inner":"spectralFlatness_InnerSubcarriers",
                  "flatness_outer":"spectralFlatness_OuterSubcarriers",
                  "tx_result":"Test Result",
@@ -26,7 +29,8 @@ _item_name_ref = {"standard":"Standard",
                  "rx_result":"result"
                 }
 
-_tx_seq = ["standard","channel","rate","BW","antenna","Power","EVM","Mask","F_ER","flatness_inner","flatness_outer","tx_result"]
+_tx_seq = ["standard","channel","rate","BW","antenna","Target_Power","Measured_Power","EVM","Mask","F_ER",
+           "Phase_Noise","Lo_Leakage","flatness_inner","flatness_outer","tx_result"]
 _rx_seq = ["standard","channel","rate","BW","antenna","rx_result","SENS"]
 
 def _get_standard(table, data, start_pos, _, items_pos):
@@ -101,11 +105,17 @@ def _get_stream_rx(table, data, start_pos, group_num, items_pos):
         data["stream"] = str(group_num)
 
 def _get_power(table, data, start_pos, group_num, items_pos):
-    if "Power" in items_pos:
+    if "Measured_Power" in items_pos:
         powers = ""
         for i in range(group_num):
-            powers += table.row_values(start_pos + i)[items_pos["Power"]] + ","
-        data["Power"] = powers[:-1]
+            powers += table.row_values(start_pos + i)[items_pos["Measured_Power"]] + ","
+        data["Measured_Power"] = powers[:-1]
+
+    if "Target_Power" in items_pos:
+        powers = ""
+        for i in range(group_num):
+            powers += table.row_values(start_pos + i)[items_pos["Target_Power"]] + ","
+        data["Target_Power"] = powers[:-1]
 
 def _get_EVM(table, data, start_pos, group_num, items_pos):
     if "EVM" in items_pos:
@@ -127,7 +137,24 @@ def _get_mask(table, data, start_pos, group_num, items_pos):
 
 def _get_f_er(table, data, start_pos, group_num, items_pos):
     if "F_ER" in items_pos:
-        data["F_ER"] = table.row_values(start_pos)[items_pos["F_ER"]]
+        evms = ""
+        for i in range(group_num):
+            evms += table.row_values(start_pos + i)[items_pos["F_ER"]] + ","
+        data["F_ER"] = evms[:-1]
+
+def _get_phase_noise(table, data, start_pos, group_num, items_pos):
+    if "Phase_Noise" in items_pos:
+        evms = ""
+        for i in range(group_num):
+            evms += table.row_values(start_pos + i)[items_pos["Phase_Noise"]] + ","
+        data["Phase_Noise"] = evms[:-1]
+
+def _get_lo_leakage(table, data, start_pos, group_num, items_pos):
+    if "Lo_Leakage" in items_pos:
+        evms = ""
+        for i in range(group_num):
+            evms += table.row_values(start_pos + i)[items_pos["Lo_Leakage"]] + ","
+        data["Lo_Leakage"] = evms[:-1]
 
 def _get_flatness(table, data,start_pos, group_num, items_pos):
     flatness = ""
@@ -167,6 +194,8 @@ _get_func = {"standard":_get_standard,
              "EVM":_get_EVM,
              "Mask":_get_mask,
              "F_ER":_get_f_er,
+             "Phase_Noise":_get_phase_noise,
+             "Lo_Leakage":_get_lo_leakage,
              "flatness":_get_flatness,
              "SENS":_get_sens
             }
@@ -192,7 +221,7 @@ def _get_rx_items_pos(items_list):
 def _get_tx_items_value(table, start_pos, group_num, items_pos):
     data = {}
 
-    tx_items = ["standard","channel","rate","BW","antenna","stream_tx","Power","EVM","Mask","F_ER","flatness"]
+    tx_items = ["standard","channel","rate","BW","antenna","stream_tx","Power","EVM","Mask","F_ER","Phase_Noise","Lo_Leakage","flatness"]
 
     for item in tx_items:
         _get_func[item](table, data, start_pos, group_num, items_pos)
